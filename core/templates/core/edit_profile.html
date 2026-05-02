@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile - Gaming Hub</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; display: flex; flex-direction: column; }
+
+        .navbar {
+            background: #1e293b;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid #3b82f6;
+        }
+        .logo { font-size: 1.8rem; font-weight: bold; color: #60a5fa; text-decoration: none; }
+        .nav-links { display: flex; gap: 1.5rem; align-items: center; }
+        .nav-link { color: #cbd5e1; text-decoration: none; padding: 0.5rem 1rem; border-radius: 5px; }
+        .nav-link:hover { background: #334155; color: #60a5fa; }
+        .btn { background: #3b82f6; color: white; padding: 0.75rem 1.5rem; border-radius: 5px; text-decoration: none; border: none; cursor: pointer; font-size: 1rem; font-weight: 500; }
+        .btn:hover { background: #2563eb; }
+        .btn-success { background: #10b981; }
+        .btn-success:hover { background: #059669; }
+        .btn-outline { background: transparent; border: 2px solid #3b82f6; color: #3b82f6; }
+        .btn-outline:hover { background: rgba(59, 130, 246, 0.1); }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            flex: 1;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%);
+            padding: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            border-radius: 0 0 20px 20px;
+        }
+        .hero h1 { font-size: 2rem; color: #60a5fa; margin-bottom: 0.5rem; }
+
+        .edit-card {
+            background: #1e293b;
+            border-radius: 10px;
+            padding: 2rem;
+            border: 1px solid #334155;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: #60a5fa;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid #3b82f6;
+            padding-left: 1rem;
+        }
+
+        .form-group { margin-bottom: 1.5rem; }
+        .form-label { display: block; color: #cbd5e1; margin-bottom: 0.5rem; font-weight: 500; }
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            background: #334155;
+            border: 1px solid #475569;
+            color: white;
+            padding: 0.75rem;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .avatar-preview {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .avatar-circle {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            border: 3px solid white;
+        }
+
+        .color-options {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        .color-option {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        .color-option.active {
+            border-color: white;
+        }
+
+        .game-selection {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .game-option {
+            background: #334155;
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+        .game-option:hover {
+            background: #475569;
+            transform: translateY(-3px);
+        }
+        .game-option.active {
+            border-color: #3b82f6;
+            background: #3b82f6;
+            color: white;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            justify-content: flex-end;
+        }
+
+        .error-message {
+            background: #7f1d1d;
+            color: #fecaca;
+            padding: 0.75rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            border-left: 4px solid #dc2626;
+        }
+
+        .success-message {
+            background: #065f46;
+            color: #a7f3d0;
+            padding: 0.75rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            border-left: 4px solid #10b981;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+            border-top: 1px solid #334155;
+            color: #94a3b8;
+        }
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+        .footer-links a {
+            color: #60a5fa;
+            text-decoration: none;
+        }
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+
+        /* Limit warning */
+        .limit-warning {
+            color: #f59e0b;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" class="logo">🎮 ULTIMATE GAMING HUB</a>
+        <div class="nav-links">
+            <a href="/" class="nav-link">🏠 Home</a>
+            <a href="/games/" class="nav-link">🎮 Games</a>
+            <a href="/leaderboards/" class="nav-link">🏆 Leaderboards</a>
+            {% if user.is_authenticated %}
+                <a href="/profile/{{ user.username }}/" class="nav-link">👤 {{ user.username }}</a>
+                <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn">Logout</button>
+                </form>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="hero">
+            <h1>Edit Your Profile</h1>
+            <p style="color: #cbd5e1;">Customize how other gamers see you on Gaming Hub</p>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.tags == 'error' %}
+                <div class="error-message">{{ message }}</div>
+                {% elif message.tags == 'success' %}
+                <div class="success-message">{{ message }}</div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+
+        <form method="post" enctype="multipart/form-data" id="profileForm">
+            {% csrf_token %}
+
+            <!-- Basic Information -->
+            <div class="edit-card">
+                <h2 class="section-title">👤 Basic Information</h2>
+
+                <div class="form-group">
+                    <label class="form-label">Display Name</label>
+                    <input type="text" name="display_name" class="form-input" value="{{ user.username }}" readonly>
+                    <small style="color: #94a3b8; font-size: 0.875rem; display: block; margin-top: 0.25rem;">
+                        Username cannot be changed.
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">📧 Email Address</label>
+                    <input type="email" name="email" class="form-input" value="{{ user.email }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">📝 Bio (Tell us about yourself)</label>
+                    <textarea name="bio" class="form-textarea" placeholder="🎮 Passionate gamer • 🏆 Competitive player • 🤝 Team player" maxlength="500">{{ profile.bio|default:"" }}</textarea>
+                    <small style="color: #94a3b8; font-size: 0.875rem; display: block; margin-top: 0.25rem;">
+                        Max 500 characters.
+                    </small>
+                </div>
+            </div>
+
+            <!-- Gaming Preferences -->
+            <div class="edit-card">
+                <h2 class="section-title">🎮 Gaming Preferences</h2>
+
+                <div class="form-group">
+                    <label class="form-label">Preferred Platform</label>
+                    <select name="platform" class="form-select">
+                        <option value="PC" {% if profile.platform == "PC" %}selected{% endif %}>🖥 PC</option>
+                        <option value="Mobile" {% if profile.platform == "Mobile" %}selected{% endif %}>📱 Mobile</option>
+                        <option value="Console" {% if profile.platform == "Console" %}selected{% endif %}>🎮 Console</option>
+                        <option value="All" {% if not profile.platform or profile.platform == "All" %}selected{% endif %}>🎮 All Platforms</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Play Style</label>
+                    <select name="play_style" class="form-select">
+                        <option value="Casual" {% if profile.play_style == "Casual" %}selected{% endif %}>😌 Casual</option>
+                        <option value="Competitive" {% if profile.play_style == "Competitive" or not profile.play_style %}selected{% endif %}>🏆 Competitive</option>
+                        <option value="Hardcore" {% if profile.play_style == "Hardcore" %}selected{% endif %}>⚡ Hardcore</option>
+                        <option value="Social" {% if profile.play_style == "Social" %}selected{% endif %}>🤝 Social</option>
+                    </select>
+                </div>
+
+                <!-- FAVORITE GAMES SECTION - FIXED -->
+                <div class="form-group">
+                    <label class="form-label">⭐ Favorite Games (Select up to 5)</label>
+                    <div class="game-selection" id="gameContainer">
+                        {% for game in all_games %}
+                        <div class="game-option" data-id="{{ game.id }}">
+                            <div style="font-size: 1.8rem; margin-bottom: 8px;">🎮</div>
+                            <div style="font-weight: 500; font-size: 0.95rem;">{{ game.name }}</div>
+                        </div>
+                        {% empty %}
+                        <div style="color: #94a3b8; padding: 2rem; text-align: center; grid-column: 1 / -1;">
+                            <div style="font-size: 3rem; margin-bottom: 1rem;">🎮</div>
+                            <p>No games available</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Hidden input to store selected game IDs -->
+                    <input type="hidden" name="favorite_games" id="favoriteGamesInput" value="">
+
+                    <div style="margin-top: 12px; color: #94a3b8; font-size: 0.9rem;">
+                        Selected: <span id="selectedCount">0</span>/5 games
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Preferred Game Mode</label>
+                    <select name="preferred_mode" class="form-select">
+                        <option value="CASUAL" {% if profile.preferred_mode == "CASUAL" %}selected{% endif %}>😌 Casual Play</option>
+                        <option value="COMPETITIVE" {% if profile.preferred_mode == "COMPETITIVE" %}selected{% endif %}>🏆 Ranked Match</option>
+                        <option value="TOURNAMENT" {% if profile.preferred_mode == "TOURNAMENT" %}selected{% endif %}>🏅 Tournament</option>
+                        <option value="PRACTICE" {% if profile.preferred_mode == "PRACTICE" %}selected{% endif %}>🎯 Practice/Scrim</option>
+                        <option value="CUSTOM" {% if profile.preferred_mode == "CUSTOM" %}selected{% endif %}>🎮 Custom Game</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="button-group">
+                <a href="/profile/{{ user.username }}/" class="btn btn-outline">← Cancel</a>
+                <button type="submit" class="btn btn-success">💾 Save Changes</button>
+            </div>
+        </form>
+    </div>
+
+    <footer class="footer">
+        <p>🎮 ULTIMATE GAMING HUB © 2025 - Connect with gamers worldwide</p>
+        <div class="footer-links">
+            <a href="/about/">About</a>
+            <a href="/contact/">Contact</a>
+            <a href="/terms/">Terms</a>
+            <a href="/privacy/">Privacy</a>
+            <a href="/games/">Games</a>
+            <a href="/leaderboards/">Leaderboards</a>
+        </div>
+    </footer>
+
+    <script>
+        // Game selection system - SIMPLE AND WORKING
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("Game selection script loaded!");
+
+            const MAX_SELECTIONS = 5;
+            let selectedIds = [];
+            const hiddenInput = document.getElementById('favoriteGamesInput');
+            const countElement = document.getElementById('selectedCount');
+            const gameOptions = document.querySelectorAll('.game-option[data-id]');
+
+            console.log("Found " + gameOptions.length + " game options");
+
+            // Initialize from current selections passed from Django
+            // selected_game_ids is passed from the view
+            {% for id in selected_game_ids %}
+                selectedIds.push("{{ id }}");
+                console.log("Pre-selected game ID: {{ id }}");
+            {% endfor %}
+
+            // Function to update the UI
+            function updateUI() {
+                console.log("Updating UI. Selected IDs:", selectedIds);
+
+                // Update count display
+                countElement.textContent = selectedIds.length;
+
+                // Update hidden input for form submission
+                hiddenInput.value = selectedIds.join(',');
+                console.log("Hidden input value set to:", hiddenInput.value);
+
+                // Update visual selection state
+                gameOptions.forEach(function(option) {
+                    const id = option.getAttribute('data-id');
+                    if (selectedIds.includes(id)) {
+                        option.classList.add('active');
+                    } else {
+                        option.classList.remove('active');
+                    }
+                });
+
+                // Change color when at limit
+                if (selectedIds.length >= MAX_SELECTIONS) {
+                    countElement.classList.add('limit-warning');
+                } else {
+                    countElement.classList.remove('limit-warning');
+                }
+            }
+
+            // Add click event to each game option
+            gameOptions.forEach(function(option) {
+                option.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    console.log("Clicked game ID:", id);
+
+                    // Check if already selected
+                    const index = selectedIds.indexOf(id);
+
+                    if (index > -1) {
+                        // Already selected, so deselect it
+                        selectedIds.splice(index, 1);
+                        console.log("Deselected game ID:", id);
+                    } else {
+                        // Not selected yet
+                        if (selectedIds.length < MAX_SELECTIONS) {
+                            // Under limit, so select it
+                            selectedIds.push(id);
+                            console.log("Selected game ID:", id);
+                        } else {
+                            // At limit, show warning
+                            alert("Maximum " + MAX_SELECTIONS + " games allowed! Please deselect some first.");
+                            return;
+                        }
+                    }
+
+                    // Update the UI after change
+                    updateUI();
+                });
+            });
+
+            // Form submission validation
+            const form = document.getElementById('profileForm');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    console.log("Form submitting...");
+                    console.log("Selected IDs:", selectedIds);
+
+                    // Validate selection count
+                    if (selectedIds.length > MAX_SELECTIONS) {
+                        e.preventDefault();
+                        alert("Please select no more than " + MAX_SELECTIONS + " games.");
+                        return false;
+                    }
+
+                    // Make sure hidden input is updated
+                    hiddenInput.value = selectedIds.join(',');
+                    console.log("Final hidden input value:", hiddenInput.value);
+
+                    return true;
+                });
+            }
+
+            // Initial UI update
+            updateUI();
+            console.log("Game selection system initialized successfully!");
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💰 Payment - {{ tournament.title }}</title>
+    <style>
+        /* Match your existing styles */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0f172a; color: #e2e8f0; }
+
+        .navbar {
+            background: #1e293b;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid #3b82f6;
+        }
+        .logo { font-size: 1.8rem; font-weight: bold; color: #60a5fa; text-decoration: none; }
+        .nav-links { display: flex; gap: 1.5rem; }
+        .nav-link { color: #cbd5e1; text-decoration: none; padding: 0.5rem 1rem; border-radius: 5px; }
+        .nav-link:hover { background: #334155; color: #60a5fa; }
+        .btn {
+            background: #3b82f6;
+            color: white;
+            padding: 0.6rem 1.2rem;
+            border-radius: 5px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            display: inline-block;
+        }
+        .btn:hover { background: #2563eb; }
+        .btn-success { background: #10b981; }
+        .btn-success:hover { background: #059669; }
+        .btn-warning { background: #f59e0b; color: #000; }
+        .btn-warning:hover { background: #d97706; }
+
+        /* Payment Styles */
+        .payment-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .payment-card {
+            background: #1e293b;
+            border-radius: 10px;
+            padding: 2rem;
+            border: 1px solid #334155;
+        }
+
+        .payment-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .payment-title {
+            font-size: 1.8rem;
+            color: #60a5fa;
+            margin-bottom: 0.5rem;
+        }
+
+        .tournament-name {
+            color: #f1f5f9;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .payment-amount {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #000;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            font-size: 2rem;
+            font-weight: bold;
+            display: inline-block;
+            margin: 1rem 0;
+        }
+
+        /* Payment Methods */
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .payment-method {
+            background: #0f172a;
+            border: 2px solid #334155;
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .payment-method:hover {
+            border-color: #3b82f6;
+            transform: translateY(-2px);
+        }
+
+        .payment-method.selected {
+            border-color: #10b981;
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .method-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .method-name {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .method-desc {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        /* Payment Details Form */
+        .payment-details {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #334155;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            color: #cbd5e1;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.8rem;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 5px;
+            color: #e2e8f0;
+        }
+
+        .form-textarea {
+            width: 100%;
+            padding: 0.8rem;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 5px;
+            color: #e2e8f0;
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        /* Bank Details */
+        .bank-details {
+            background: #0f172a;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 1px solid #334155;
+            margin-top: 1rem;
+        }
+
+        .bank-info {
+            margin-bottom: 1rem;
+        }
+
+        .bank-info div {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            padding: 0.5rem;
+            background: #1e293b;
+            border-radius: 5px;
+        }
+
+        .info-label {
+            color: #94a3b8;
+        }
+
+        .info-value {
+            color: #f1f5f9;
+            font-weight: bold;
+            font-family: monospace;
+        }
+
+        /* Upload Section */
+        .upload-section {
+            margin-top: 2rem;
+        }
+
+        .upload-box {
+            border: 2px dashed #334155;
+            border-radius: 10px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .upload-box:hover {
+            border-color: #3b82f6;
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: #94a3b8;
+            margin-bottom: 1rem;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .file-name {
+            margin-top: 1rem;
+            color: #60a5fa;
+            font-weight: bold;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+            border-top: 1px solid #334155;
+            color: #94a3b8;
+        }
+
+        @media (max-width: 768px) {
+            .navbar { flex-direction: column; gap: 1rem; }
+            .nav-links { flex-wrap: wrap; justify-content: center; }
+            .payment-methods { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="/" class="logo">🎮 ULTIMATE GAMING HUB</a>
+        <div class="nav-links">
+            <a href="/" class="nav-link">🏠 Home</a>
+            <a href="{% url 'tournament_list' %}" class="nav-link">🏆 Tournaments</a>
+            <a href="{% url 'user_tournaments' %}" class="nav-link">📋 My Tournaments</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'profile' user.username %}" class="nav-link">👤 {{ user.username }}</a>
+                <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn">Logout</button>
+                </form>
+            {% else %}
+                <a href="/login/" class="nav-link">Login</a>
+                <a href="/register/" class="btn">Sign Up</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <!-- Payment Container -->
+    <div class="payment-container">
+        <div class="payment-card">
+            <div class="payment-header">
+                <h1 class="payment-title">💰 PAYMENT REQUIRED</h1>
+                <p class="tournament-name">{{ tournament.title }}</p>
+                <div class="payment-amount">${{ tournament.entry_fee }}</div>
+                <p style="color: #94a3b8;">Entry fee for tournament registration</p>
+            </div>
+
+            <!-- Order Summary -->
+            <div style="background: #0f172a; padding: 1.5rem; border-radius: 10px; margin-bottom: 2rem;">
+                <h3 style="margin-bottom: 1rem; color: #60a5fa;">📋 Order Summary</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div>
+                        <div style="color: #94a3b8; margin-bottom: 0.3rem;">Tournament</div>
+                        <div style="font-weight: bold;">{{ tournament.title }}</div>
+                    </div>
+                    <div>
+                        <div style="color: #94a3b8; margin-bottom: 0.3rem;">Game</div>
+                        <div style="font-weight: bold;">{{ tournament.get_game_type_display }}</div>
+                    </div>
+                    <div>
+                        <div style="color: #94a3b8; margin-bottom: 0.3rem;">Start Date</div>
+                        <div>{{ tournament.start_date|date:"M d, Y - H:i" }}</div>
+                    </div>
+                    <div>
+                        <div style="color: #94a3b8; margin-bottom: 0.3rem;">Entry Fee</div>
+                        <div style="font-weight: bold; color: #f59e0b;">${{ tournament.entry_fee }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Choose Payment Method -->
+            <h3 style="margin-bottom: 1rem; color: #60a5fa;">💳 Choose Payment Method</h3>
+            <div class="payment-methods">
+                <div class="payment-method" onclick="selectPaymentMethod('stripe')" id="method-stripe">
+                    <div class="method-icon">💳</div>
+                    <div class="method-name">Credit/Debit Card</div>
+                    <div class="method-desc">Visa, Mastercard, Amex</div>
+                </div>
+
+                <div class="payment-method" onclick="selectPaymentMethod('paypal')" id="method-paypal">
+                    <div class="method-icon">💰</div>
+                    <div class="method-name">PayPal</div>
+                    <div class="method-desc">Pay with PayPal account</div>
+                </div>
+
+                <div class="payment-method" onclick="selectPaymentMethod('bank')" id="method-bank">
+                    <div class="method-icon">🏦</div>
+                    <div class="method-name">Bank Transfer</div>
+                    <div class="method-desc">Manual bank transfer</div>
+                </div>
+
+                <div class="payment-method" onclick="selectPaymentMethod('manual')" id="method-manual">
+                    <div class="method-icon">📱</div>
+                    <div class="method-name">Mobile Money</div>
+                    <div class="method-desc">Pay via mobile wallet</div>
+                </div>
+            </div>
+
+            <!-- Payment Forms -->
+            <form method="post" enctype="multipart/form-data" id="paymentForm">
+                {% csrf_token %}
+                <input type="hidden" name="payment_method" id="paymentMethod" value="manual">
+
+                <!-- Card Payment (Stripe) -->
+                <div class="payment-details" id="stripe-form" style="display: none;">
+                    <h3 style="margin-bottom: 1rem; color: #60a5fa;">💳 Card Details</h3>
+                    <div class="form-group">
+                        <label class="form-label">Card Number</label>
+                        <input type="text" class="form-input" placeholder="1234 5678 9012 3456" name="card_number">
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group">
+                            <label class="form-label">Expiry Date</label>
+                            <input type="text" class="form-input" placeholder="MM/YY" name="card_expiry">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">CVC</label>
+                            <input type="text" class="form-input" placeholder="123" name="card_cvc">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Cardholder Name</label>
+                        <input type="text" class="form-input" placeholder="John Doe" name="card_name">
+                    </div>
+                    <button type="submit" class="btn btn-success" style="width: 100%; padding: 1rem; font-size: 1.1rem;">
+                        💳 Pay ${{ tournament.entry_fee }} Now
+                    </button>
+                </div>
+
+                <!-- PayPal -->
+                <div class="payment-details" id="paypal-form" style="display: none;">
+                    <h3 style="margin-bottom: 1rem; color: #60a5fa;">💰 PayPal Payment</h3>
+                    <p style="color: #94a3b8; margin-bottom: 1.5rem;">
+                        You will be redirected to PayPal to complete your payment.
+                    </p>
+                    <button type="button" onclick="processPayPal()" class="btn btn-warning" style="width: 100%; padding: 1rem; font-size: 1.1rem;">
+                        🔗 Proceed to PayPal
+                    </button>
+                </div>
+
+                <!-- Bank Transfer -->
+                <div class="payment-details" id="bank-form" style="display: none;">
+                    <h3 style="margin-bottom: 1rem; color: #60a5fa;">🏦 Bank Transfer Details</h3>
+
+                    <div class="bank-details">
+                        <h4 style="margin-bottom: 1rem; color: #f1f5f9;">Transfer to:</h4>
+
+                        <div class="bank-info">
+                            <div>
+                                <span class="info-label">Bank Name:</span>
+                                <span class="info-value">ULTIMATE GAMING BANK</span>
+                            </div>
+                            <div>
+                                <span class="info-label">Account Name:</span>
+                                <span class="info-value">ULTIMATE GAMING HUB</span>
+                            </div>
+                            <div>
+                                <span class="info-label">Account Number:</span>
+                                <span class="info-value">1234567890</span>
+                            </div>
+                            <div>
+                                <span class="info-label">Swift Code:</span>
+                                <span class="info-value">ULTIMATE01</span>
+                            </div>
+                            <div>
+                                <span class="info-label">Reference:</span>
+                                <span class="info-value">TOUR{{ tournament.id }}-{{ user.id }}</span>
+                            </div>
+                        </div>
+
+                        <p style="color: #f59e0b; font-size: 0.9rem;">
+                            ⚠️ Use the reference code above when making transfer
+                        </p>
+                    </div>
+
+                    <div class="upload-section">
+                        <h4 style="margin-bottom: 1rem; color: #f1f5f9;">📤 Upload Payment Proof</h4>
+                        <div class="upload-box" onclick="document.getElementById('paymentProof').click()">
+                            <div class="upload-icon">📎</div>
+                            <div style="color: #cbd5e1; margin-bottom: 0.5rem;">
+                                Click to upload payment proof
+                            </div>
+                            <div style="color: #94a3b8; font-size: 0.9rem;">
+                                Supported: JPG, PNG, PDF (Max 5MB)
+                            </div>
+                            <input type="file" name="payment_proof" id="paymentProof" class="file-input" accept="image/*,.pdf">
+                            <div id="fileName" class="file-name"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-top: 1.5rem;">
+                        <label class="form-label">Transaction ID / Reference</label>
+                        <input type="text" class="form-input" name="transaction_id" placeholder="Enter bank transaction ID">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Additional Notes (Optional)</label>
+                        <textarea class="form-textarea" name="payment_notes" placeholder="Any additional information about your payment..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn" style="width: 100%; padding: 1rem; font-size: 1.1rem;">
+                        ✅ Submit Payment Proof
+                    </button>
+                </div>
+
+                <!-- Manual/Mobile Money -->
+                <div class="payment-details" id="manual-form">
+                    <h3 style="margin-bottom: 1rem; color: #60a5fa;">📱 Mobile Money Payment</h3>
+
+                    <div class="bank-details">
+                        <h4 style="margin-bottom: 1rem; color: #f1f5f9;">Send Payment to:</h4>
+
+                        <div class="bank-info">
+                            <div>
+                                <span class="info-label">Provider:</span>
+                                <span class="info-value">MTN Mobile Money</span>
+                            </div>
+                            <div>
+                                <span class="info-label">Phone Number:</span>
+                                <span class="info-value">+1 234 567 8900</span>
+                            </div>
+                            <div>
+                                <span class="info-label">Account Name:</span>
+                                <span class="info-value">ULTIMATE GAMING HUB</span>
+                            </div>
+                            <div>
+                                <span class="info-label">Reference:</span>
+                                <span class="info-value">TOUR{{ tournament.id }}-{{ user.id }}</span>
+                            </div>
+                            <div>
+                                <span class="info-label">Amount:</span>
+                                <span class="info-value" style="color: #f59e0b;">${{ tournament.entry_fee }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="upload-section">
+                        <h4 style="margin-bottom: 1rem; color: #f1f5f9;">📸 Upload Payment Screenshot</h4>
+                        <div class="upload-box" onclick="document.getElementById('manualProof').click()">
+                            <div class="upload-icon">📸</div>
+                            <div style="color: #cbd5e1; margin-bottom: 0.5rem;">
+                                Upload payment confirmation screenshot
+                            </div>
+                            <input type="file" name="payment_proof" id="manualProof" class="file-input" accept="image/*">
+                            <div id="manualFileName" class="file-name"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-top: 1.5rem;">
+                        <label class="form-label">Transaction ID</label>
+                        <input type="text" class="form-input" name="transaction_id" placeholder="Enter transaction ID from SMS" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Your Phone Number</label>
+                        <input type="text" class="form-input" name="payer_phone" placeholder="Phone number used for payment">
+                    </div>
+
+                    <button type="submit" class="btn btn-success" style="width: 100%; padding: 1rem; font-size: 1.1rem;">
+                        📱 Submit Payment Details
+                    </button>
+                </div>
+            </form>
+
+            <!-- Payment Instructions -->
+            <div style="background: #0f172a; padding: 1.5rem; border-radius: 10px; margin-top: 2rem;">
+                <h4 style="color: #60a5fa; margin-bottom: 0.5rem;">📝 Important Notes:</h4>
+                <ul style="color: #94a3b8; padding-left: 1.5rem;">
+                    <li>Registration is confirmed only after payment verification</li>
+                    <li>Payment verification takes 1-24 hours</li>
+                    <li>Refunds available if tournament is cancelled</li>
+                    <li>Contact support@gamehub.com for payment issues</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>🎮 ULTIMATE GAMING HUB © 2025 - Connect with gamers worldwide</p>
+        <p style="margin-top: 1rem; font-size: 0.9rem;">
+            <a href="/about" style="color: #60a5fa; margin: 0 0.5rem;">About</a> •
+            <a href="/contact" style="color: #60a5fa; margin: 0 0.5rem;">Contact</a> •
+            <a href="/terms" style="color: #60a5fa; margin: 0 0.5rem;">Terms</a> •
+            <a href="/privacy" style="color: #60a5fa; margin: 0 0.5rem;">Privacy</a>
+        </p>
+    </footer>
+
+    <script>
+        // Payment Method Selection
+        let selectedMethod = 'manual';
+
+        function selectPaymentMethod(method) {
+            selectedMethod = method;
+            document.getElementById('paymentMethod').value = method;
+
+            // Update UI
+            document.querySelectorAll('.payment-method').forEach(el => {
+                el.classList.remove('selected');
+            });
+            document.getElementById(`method-${method}`).classList.add('selected');
+
+            // Show appropriate form
+            document.getElementById('stripe-form').style.display = 'none';
+            document.getElementById('paypal-form').style.display = 'none';
+            document.getElementById('bank-form').style.display = 'none';
+            document.getElementById('manual-form').style.display = 'none';
+
+            document.getElementById(`${method}-form`).style.display = 'block';
+        }
+
+        // File upload handling
+        document.getElementById('paymentProof').addEventListener('change', function(e) {
+            const fileName = e.target.files[0]?.name || 'No file chosen';
+            document.getElementById('fileName').textContent = fileName;
+        });
+
+        document.getElementById('manualProof').addEventListener('change', function(e) {
+            const fileName = e.target.files[0]?.name || 'No file chosen';
+            document.getElementById('manualFileName').textContent = fileName;
+        });
+
+        // Initialize with manual payment
+        document.addEventListener('DOMContentLoaded', function() {
+            selectPaymentMethod('manual');
+        });
+
+        // PayPal simulation
+        function processPayPal() {
+            alert('Redirecting to PayPal... (This is a demo)\n\nIn real implementation, this would redirect to PayPal checkout.');
+            // In real app: window.location.href = '{{ paypal_checkout_url }}';
+        }
+    </script>
+</body>
+</html>

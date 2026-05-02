@@ -1,0 +1,426 @@
+<!-- core/templates/core/room_list.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Rooms - Gaming Hub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0f172a;
+            color: #f1f5f9;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%);
+            border-radius: 20px;
+            border: 2px solid #334155;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: #60a5fa;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #cbd5e1;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+
+        .create-btn {
+            display: inline-block;
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 10px;
+            transition: all 0.3s;
+        }
+
+        .create-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .rooms-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .room-card {
+            background: #1e293b;
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid #334155;
+            transition: all 0.3s ease;
+        }
+
+        .room-card:hover {
+            border-color: #3b82f6;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .room-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .room-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+
+        .room-code {
+            background: #0f172a;
+            color: #60a5fa;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-family: monospace;
+            font-size: 1.1rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            border: 2px solid #334155;
+            cursor: pointer;
+            user-select: all;
+        }
+
+        .room-code:hover {
+            border-color: #3b82f6;
+        }
+
+        .room-game {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #94a3b8;
+            margin-bottom: 15px;
+            font-size: 1rem;
+        }
+
+        .room-info {
+            margin: 20px 0;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            color: #cbd5e1;
+        }
+
+        .players-section {
+            margin: 20px 0;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #334155;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 5px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #34d399);
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+
+        .players-count {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: #94a3b8;
+        }
+
+        .room-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .btn-view {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .btn-join {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            grid-column: 1 / -1;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .empty-state h3 {
+            color: #f1f5f9;
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            color: #94a3b8;
+            margin-bottom: 20px;
+        }
+
+        .game-filter {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            background: #334155;
+            border: none;
+            border-radius: 20px;
+            color: #cbd5e1;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .game-icon {
+            font-size: 1.2rem;
+            margin-right: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .rooms-container {
+                grid-template-columns: 1fr;
+            }
+
+            .room-actions {
+                flex-direction: column;
+            }
+
+            .room-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .room-code {
+                align-self: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🎮 Game Rooms</h1>
+            <p>Find rooms to join or create your own. Share room codes with friends!</p>
+            <a href="{% url 'create_room' %}" class="create-btn">➕ Create New Room</a>
+        </div>
+
+        <!-- Game Filter -->
+        <div class="game-filter">
+            <a href="?game=" class="filter-btn {% if not game_filter %}active{% endif %}">
+                🎮 All Games
+            </a>
+            <a href="?game=FIFA" class="filter-btn {% if game_filter == 'FIFA' %}active{% endif %}">
+                ⚽ FIFA
+            </a>
+            <a href="?game=COD" class="filter-btn {% if game_filter == 'COD' %}active{% endif %}">
+                🔫 Call of Duty
+            </a>
+            <a href="?game=FORTNITE" class="filter-btn {% if game_filter == 'FORTNITE' %}active{% endif %}">
+                🏹 Fortnite
+            </a>
+            <a href="?game=DLS" class="filter-btn {% if game_filter == 'DLS' %}active{% endif %}">
+                ⚽ Dream League
+            </a>
+            <a href="?game=MINECRAFT" class="filter-btn {% if game_filter == 'MINECRAFT' %}active{% endif %}">
+                ⛏️ Minecraft
+            </a>
+        </div>
+
+        <!-- Rooms Grid -->
+        <div class="rooms-container">
+            {% for room in rooms %}
+            <div class="room-card">
+                <!-- Room Header with Code -->
+                <div class="room-header">
+                    <div class="room-title">{{ room.title }}</div>
+                    <div class="room-code" title="Click to copy" onclick="copyToClipboard('{{ room.room_code }}', this)">
+                        {{ room.room_code }}
+                    </div>
+                </div>
+
+                <!-- Game Info -->
+                <div class="room-game">
+                    <span class="game-icon">
+                        {% if room.game == "FIFA" %}⚽
+                        {% elif room.game == "COD" %}🔫
+                        {% elif room.game == "FORTNITE" %}🏹
+                        {% elif room.game == "DLS" %}⚽
+                        {% elif room.game == "MINECRAFT" %}⛏️
+                        {% else %}🎮{% endif %}
+                    </span>
+                    <span>{{ room.get_game_display }}</span>
+                </div>
+
+                <!-- Room Info -->
+                <div class="room-info">
+                    <div class="info-row">
+                        <span>👑 Host:</span>
+                        <span>{{ room.host.username }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span>🎯 Status:</span>
+                        <span>{{ room.get_status_display }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span>⏰ Created:</span>
+                        <span>{{ room.created_at|timesince }} ago</span>
+                    </div>
+                </div>
+
+                <!-- Players Progress -->
+                <div class="players-section">
+                    <div class="progress-bar">
+                        {% with current=room.current_players_count max=room.max_players %}
+                        <div class="progress-fill" style="width: {% widthratio current max 100 %}%"></div>
+                        {% endwith %}
+                    </div>
+                    <div class="players-count">
+                        <span>{{ room.current_players_count }} players</span>
+                        <span>{{ room.available_slots }} slots left</span>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="room-actions">
+                    <a href="{% url 'room_detail' room.room_code %}" class="btn btn-view">
+                        🔍 View Room
+                    </a>
+
+                    {% if room.user_can_join %}
+                        <a href="{% url 'join_room' room.room_code %}" class="btn btn-join">
+                            🎮 Join Room
+                        </a>
+                    {% elif request.user in room.players.all %}
+                        <span class="btn" style="background: #6b7280;">
+                            ✅ Joined
+                        </span>
+                    {% elif room.host == request.user %}
+                        <span class="btn" style="background: #f59e0b;">
+                            👑 You're Host
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                <div class="empty-icon">🎮</div>
+                <h3>No active rooms found</h3>
+                <p>Be the first to create a room! Share the code with friends to play together.</p>
+                <a href="{% url 'create_room' %}" class="create-btn">Create First Room</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script>
+        // Copy room code to clipboard
+        function copyToClipboard(code, element) {
+            navigator.clipboard.writeText(code).then(() => {
+                const original = element.textContent;
+                element.textContent = '✅ Copied!';
+                element.style.background = '#10b981';
+                element.style.color = 'white';
+
+                setTimeout(() => {
+                    element.textContent = original;
+                    element.style.background = '#0f172a';
+                    element.style.color = '#60a5fa';
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                alert('Failed to copy code. Please copy manually: ' + code);
+            });
+        }
+
+        // Auto-refresh every 30 seconds
+        setTimeout(() => {
+            window.location.reload();
+        }, 30000);
+
+        // Highlight current user's rooms
+        document.addEventListener('DOMContentLoaded', function() {
+            const roomCards = document.querySelectorAll('.room-card');
+            roomCards.forEach(card => {
+                const hostName = card.querySelector('.info-row span:last-child').textContent;
+                if (hostName === '{{ request.user.username }}') {
+                    card.style.border = '2px solid #f59e0b';
+                    card.style.boxShadow = '0 0 15px rgba(245, 158, 11, 0.3)';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

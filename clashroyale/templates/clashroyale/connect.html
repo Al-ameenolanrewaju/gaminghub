@@ -1,0 +1,344 @@
+<!-- templates/clashroyale/connect.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connect Clash Royale | Ultimate Gaming Hub</title>
+    <style>
+        /* Reuse styles from leaderboard */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: #1e293b;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid #f59e0b;
+        }
+        .logo { font-size: 1.5rem; font-weight: bold; color: #f59e0b; text-decoration: none; }
+        .nav-links { display: flex; gap: 1rem; flex-wrap: wrap; }
+        .nav-link {
+            color: #cbd5e1;
+            text-decoration: none;
+            padding: 0.5rem;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+        .btn {
+            background: #3b82f6;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .btn-warning {
+            background: #f59e0b;
+            color: #0f172a;
+            font-weight: bold;
+        }
+
+        /* Main Container */
+        .main-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        /* Connection Card */
+        .connection-card {
+            background: #1e293b;
+            border-radius: 15px;
+            padding: 2rem;
+            border: 2px solid #f59e0b;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Steps */
+        .steps-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .step {
+            background: #0f172a;
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid #334155;
+        }
+        .step-number {
+            width: 35px;
+            height: 35px;
+            background: #f59e0b;
+            color: #0f172a;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin: 0 auto 1rem;
+        }
+        .step-title {
+            color: #f1f5f9;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+        .step-desc {
+            color: #94a3b8;
+            font-size: 0.85rem;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-label {
+            display: block;
+            color: #f1f5f9;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        .form-input {
+            width: 100%;
+            padding: 0.8rem;
+            background: #0f172a;
+            border: 2px solid #334155;
+            border-radius: 8px;
+            color: #f1f5f9;
+            font-size: 1rem;
+            font-family: monospace;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: #f59e0b;
+        }
+        .form-help {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Messages */
+        .messages {
+            margin-bottom: 1.5rem;
+        }
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+        .alert-success {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid #10b981;
+            color: #10b981;
+        }
+        .alert-error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid #ef4444;
+            color: #f87171;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        @media (max-width: 480px) {
+            .action-buttons { flex-direction: column; }
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 2rem 1rem;
+            margin-top: 3rem;
+            border-top: 1px solid #334155;
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        /* Demo Info */
+        .demo-info {
+            background: rgba(245, 158, 11, 0.1);
+            border: 2px dashed #f59e0b;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-top: 2rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="/" class="logo">🎮 ULTIMATE GAMING HUB</a>
+        <div class="nav-links">
+            <a href="/" class="nav-link">🏠 Home</a>
+            <a href="/clash-royale/" class="nav-link">👑 Leaderboard</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'profile' user.username %}" class="nav-link">👤 {{ user.username }}</a>
+                <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn">Logout</button>
+                </form>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <!-- Connection Card -->
+        <div class="connection-card">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h1 style="color: #fbbf24; font-size: 1.8rem; margin-bottom: 0.5rem;">🔗 Connect Clash Royale</h1>
+                <p style="color: #cbd5e1;">Link your account to track stats on our leaderboard</p>
+            </div>
+
+            <!-- Steps -->
+            <div class="steps-container">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-title">Find Your Tag</div>
+                    <div class="step-desc">Open Clash Royale and copy Player Tag from profile</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-title">Enter Below</div>
+                    <div class="step-desc">Paste your Player Tag in the form</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-title">Auto Updates</div>
+                    <div class="step-desc">Stats update automatically</div>
+                </div>
+            </div>
+
+            <!-- Messages -->
+            <div class="messages">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-error{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <!-- Form -->
+            <form method="post" id="connect-form">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="player_tag" class="form-label">Player Tag</label>
+                    <input type="text"
+                           id="player_tag"
+                           name="player_tag"
+                           class="form-input"
+                           placeholder="#ABC123"
+                           required
+                           pattern="^#[0289PYLQGRJCUV]{3,15}$"
+                           title="Must start with # followed by 3-15 characters">
+                    <div class="form-help">
+                        Must start with # (e.g., #ABC123). Find it in-game: Profile → Copy Player Tag
+                    </div>
+                </div>
+
+                <!-- Demo Notice -->
+                {% if use_mock_data %}
+                <div class="demo-info">
+                    <strong>🎮 Demo Mode:</strong> Using mock data for testing. Real API will be enabled soon!
+                </div>
+                {% endif %}
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button type="submit" class="btn-warning" style="flex: 1; padding: 1rem;">
+                        🔗 Connect Account
+                    </button>
+                    <a href="/clash-royale/" class="btn" style="flex: 1; text-align: center; padding: 1rem;">
+                        ← Back to Leaderboard
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <!-- How-to Guide -->
+        <div style="background: #1e293b; border-radius: 10px; padding: 1.5rem; margin-top: 2rem;">
+            <h3 style="color: #f1f5f9; margin-bottom: 1rem;">📖 How to Find Your Player Tag</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem;">
+                <div>
+                    <h4 style="color: #f59e0b; margin-bottom: 0.5rem; font-size: 1rem;">1. Open Game</h4>
+                    <p style="color: #94a3b8; font-size: 0.9rem;">Launch Clash Royale on your device.</p>
+                </div>
+                <div>
+                    <h4 style="color: #f59e0b; margin-bottom: 0.5rem; font-size: 1rem;">2. Go to Profile</h4>
+                    <p style="color: #94a3b8; font-size: 0.9rem;">Tap your profile icon in top-left corner.</p>
+                </div>
+                <div>
+                    <h4 style="color: #f59e0b; margin-bottom: 0.5rem; font-size: 1rem;">3. Copy Tag</h4>
+                    <p style="color: #94a3b8; font-size: 0.9rem;">Tap the Player Tag below your name to copy it.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>🎮 ULTIMATE GAMING HUB © 2025 - Clash Royale Integration</p>
+        <p style="margin-top: 0.5rem; font-size: 0.8rem;">
+            This is a demo system using mock data for testing purposes.
+        </p>
+    </footer>
+
+    <script>
+        // Auto-format player tag
+        document.getElementById('player_tag').addEventListener('input', function(e) {
+            let value = e.target.value.toUpperCase();
+
+            // Ensure it starts with #
+            if (!value.startsWith('#')) {
+                value = '#' + value.replace('#', '');
+            }
+
+            // Remove invalid characters
+            value = value.replace(/[^#0289PYLQGRJCUV]/g, '');
+
+            e.target.value = value;
+
+            // Show validation
+            if (value.length >= 4 && value.length <= 16) {
+                this.style.borderColor = '#10b981';
+            } else {
+                this.style.borderColor = '#334155';
+            }
+        });
+
+        // Form submission feedback
+        document.getElementById('connect-form').addEventListener('submit', function(e) {
+            const playerTag = document.getElementById('player_tag').value;
+            if (!playerTag || !playerTag.startsWith('#') || playerTag.length < 4) {
+                e.preventDefault();
+                alert('Please enter a valid Player Tag (e.g., #ABC123)');
+                return false;
+            }
+
+            // Show loading
+            const submitBtn = this.querySelector('button[type="submit"]');
+            submitBtn.innerHTML = '⏳ Connecting...';
+            submitBtn.disabled = true;
+        });
+    </script>
+</body>
+</html>

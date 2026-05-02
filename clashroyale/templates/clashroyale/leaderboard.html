@@ -1,0 +1,563 @@
+<!-- templates/clashroyale/leaderboard.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>👑 Clash Royale Leaderboard | Ultimate Gaming Hub</title>
+    <style>
+        /* Your existing styles + Clash Royale theme */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+        }
+
+        /* Navigation (matching your site) */
+        .navbar {
+            background: #1e293b;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid #f59e0b;
+        }
+        .logo { font-size: 1.8rem; font-weight: bold; color: #f59e0b; text-decoration: none; }
+        .nav-links { display: flex; gap: 1.5rem; }
+        .nav-link {
+            color: #cbd5e1;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+        }
+        .nav-link:hover { background: #334155; color: #f59e0b; }
+        .nav-link.active { background: #f59e0b; color: #0f172a; }
+        .btn {
+            background: #3b82f6;
+            color: white;
+            padding: 0.6rem 1.2rem;
+            border-radius: 5px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+        }
+        .btn:hover { background: #2563eb; }
+        .btn-warning {
+            background: #f59e0b;
+            color: #0f172a;
+            font-weight: bold;
+        }
+        .btn-warning:hover { background: #d97706; }
+
+        /* Clash Royale Hero */
+        .hero-cr {
+            background: linear-gradient(135deg, #7c2d12 0%, #0f172a 100%);
+            padding: 2rem 1rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            border-bottom: 3px solid #f59e0b;
+        }
+        .hero-cr h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: #fbbf24;
+        }
+        @media (min-width: 768px) {
+            .hero-cr h1 { font-size: 2.5rem; }
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            background: #1e293b;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem auto;
+            max-width: 1200px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: space-around;
+            border: 1px solid #f59e0b;
+        }
+        .stat-item {
+            text-align: center;
+            min-width: 120px;
+        }
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #fbbf24;
+        }
+        .stat-label {
+            font-size: 0.9rem;
+            color: #94a3b8;
+        }
+
+        /* Mock Data Notice */
+        .mock-notice {
+            background: rgba(245, 158, 11, 0.1);
+            border: 2px dashed #f59e0b;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem auto;
+            max-width: 800px;
+            text-align: center;
+        }
+        .mock-notice h3 {
+            color: #fbbf24;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Leaderboard Container */
+        .leaderboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem 3rem;
+        }
+
+        /* Table Styles */
+        .leaderboard-table {
+            width: 100%;
+            background: #1e293b;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #334155;
+            margin-top: 1rem;
+        }
+        .table-header {
+            display: grid;
+            grid-template-columns: 80px 2fr 1fr 1fr 1fr 80px;
+            background: #0f172a;
+            padding: 1rem;
+            font-weight: bold;
+            color: #fbbf24;
+            border-bottom: 2px solid #f59e0b;
+        }
+        .table-row {
+            display: grid;
+            grid-template-columns: 80px 2fr 1fr 1fr 1fr 80px;
+            padding: 0.8rem 1rem;
+            border-bottom: 1px solid #334155;
+            align-items: center;
+        }
+        .table-row:hover {
+            background: rgba(245, 158, 11, 0.05);
+        }
+        .table-row.you {
+            background: rgba(59, 130, 246, 0.1);
+            font-weight: bold;
+        }
+
+        /* Rank Badges */
+        .rank-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-weight: bold;
+        }
+        .rank-1 { background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); color: #7c2d12; }
+        .rank-2 { background: linear-gradient(135deg, #d1d5db 0%, #9ca3af 100%); color: #374151; }
+        .rank-3 { background: linear-gradient(135deg, #d97706 0%, #92400e 100%); color: #fef3c7; }
+        .rank-other { background: #334155; color: #cbd5e1; }
+
+        /* Player Info */
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        .player-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #f59e0b 0%, #7c2d12 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 1.2rem;
+        }
+        .player-details {
+            flex: 1;
+        }
+        .player-name {
+            color: #f1f5f9;
+            font-weight: 500;
+            margin-bottom: 0.2rem;
+        }
+        .player-tag {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            font-family: monospace;
+        }
+
+        /* Stats */
+        .trophy-count {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #fbbf24;
+        }
+        .win-rate {
+            font-size: 0.9rem;
+        }
+        .clan-badge {
+            display: inline-block;
+            background: rgba(245, 158, 11, 0.1);
+            color: #fbbf24;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #94a3b8;
+        }
+        .empty-state h3 {
+            color: #f1f5f9;
+            margin-bottom: 1rem;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 2rem 1rem;
+            margin-top: 3rem;
+            border-top: 1px solid #334155;
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .navbar { flex-direction: column; gap: 1rem; padding: 1rem; }
+            .nav-links { flex-wrap: wrap; justify-content: center; }
+            .hero-cr h1 { font-size: 1.5rem; }
+            .table-header, .table-row {
+                grid-template-columns: 60px 2fr 1fr 1fr;
+                font-size: 0.9rem;
+            }
+            .table-header div:nth-child(5),
+            .table-row div:nth-child(5),
+            .table-header div:nth-child(6),
+            .table-row div:nth-child(6) {
+                display: none;
+            }
+            .player-info { gap: 0.5rem; }
+            .player-avatar { width: 35px; height: 35px; font-size: 1rem; }
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+        }
+        .page-btn {
+            padding: 0.5rem 1rem;
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #cbd5e1;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .page-btn.active {
+            background: #f59e0b;
+            color: #0f172a;
+            font-weight: bold;
+        }
+        .page-btn:hover:not(.active) {
+            background: #334155;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="/" class="logo">🎮 ULTIMATE GAMING HUB</a>
+        <div class="nav-links">
+            <a href="/" class="nav-link">🏠 Home</a>
+            <a href="/games/" class="nav-link">🏆 Manual Games</a>
+            <a href="/clash-royale/" class="nav-link active">👑 Clash Royale</a>
+            <a href="/create-room/" class="nav-link">➕ Create Room</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'profile' user.username %}" class="nav-link">👤 {{ user.username }}</a>
+                <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn">Logout</button>
+                </form>
+            {% else %}
+                <a href="/login/" class="nav-link">Login</a>
+                <a href="/register/" class="btn">Sign Up</a>
+            {% endif %}
+        </div>
+    </nav>
+     <!-- In your leaderboard.html or profile page -->
+<div class="data-source-toggle">
+    <h4>Data Source Settings</h4>
+
+    <div class="alert alert-info">
+        <p>
+            Current data source:
+            {% if player.is_mock %}
+                <span class="badge bg-warning">Mock Data</span>
+                <small>(Simulated data for testing)</small>
+            {% else %}
+                <span class="badge bg-success">Real API</span>
+                <small>(Live data from Clash Royale)</small>
+            {% endif %}
+        </p>
+
+        <form method="post" action="{% url 'toggle_data_source' %}">
+            {% csrf_token %}
+            {% if player.is_mock %}
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-satellite-dish"></i> Switch to Real API Data
+                </button>
+                <small class="text-muted d-block mt-1">
+                    Requires valid API key to be configured
+                </small>
+            {% else %}
+                <button type="submit" class="btn btn-warning">
+                    <i class="fas fa-vial"></i> Switch to Mock Data
+                </button>
+                <small class="text-muted d-block mt-1">
+                    Use simulated data for testing
+                </small>
+            {% endif %}
+        </form>
+    </div>
+
+    {% if player.is_mock %}
+    <div class="alert alert-warning">
+        <h5><i class="fas fa-info-circle"></i> Mock Data Mode</h5>
+        <p>You're currently using simulated data. Features:</p>
+        <ul>
+            <li>No API limits or rate restrictions</li>
+            <li>Always available (no network required)</li>
+            <li>Data changes randomly on refresh</li>
+            <li>Perfect for testing and development</li>
+        </ul>
+    </div>
+    {% else %}
+    <div class="alert alert-success">
+        <h5><i class="fas fa-check-circle"></i> Real API Mode</h5>
+        <p>You're using live data from Clash Royale servers:</p>
+        <ul>
+            <li>Real player stats and trophies</li>
+            <li>Live updates from the game</li>
+            <li>Requires internet connection</li>
+            <li>Subject to API rate limits</li>
+        </ul>
+    </div>
+    {% endif %}
+</div>
+    <!-- Hero Section -->
+    <section class="hero-cr">
+        <h1>👑 CLASH ROYALE LEADERBOARD</h1>
+        <p>Track rankings, compete globally, and dominate the arena!</p>
+
+        {% if user.is_authenticated %}
+            <div style="margin-top: 1rem;">
+                {% if has_clash_royale %}
+                    <a href="#your-rank" class="btn-warning">Your Rank: #{{ user_rank }}</a>
+                    <a href="{% url 'refresh_clash_royale' %}" class="btn" style="margin-left: 0.5rem;">
+                        🔄 Refresh Stats
+                    </a>
+                {% else %}
+                    <a href="{% url 'connect_clash_royale' %}" class="btn-warning">
+                        🔗 Connect Your Account
+                    </a>
+                {% endif %}
+            </div>
+        {% else %}
+            <div style="margin-top: 1rem;">
+                <a href="/login/" class="btn-warning">Login to Connect</a>
+            </div>
+        {% endif %}
+    </section>
+
+    <!-- Mock Data Notice (if using mock) -->
+    {% if use_mock_data %}
+    <div class="mock-notice">
+        <h3>🎮 Demo Mode Active</h3>
+        <p>This leaderboard is using mock data for demonstration. Connect your account to see how it works!</p>
+        <p><small>Switch to real API by setting USE_MOCK_DATA = False in views.py</small></p>
+    </div>
+    {% endif %}
+
+    <!-- Stats Bar -->
+    <div class="stats-bar">
+        <div class="stat-item">
+            <div class="stat-number">{{ total_players }}</div>
+            <div class="stat-label">Total Players</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">{{ top_trophies }}</div>
+            <div class="stat-label">Top Trophies</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">{{ top_player.player_name|default:"-" }}</div>
+            <div class="stat-label">#1 Player</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">{{ last_updated|timesince }} ago</div>
+            <div class="stat-label">Last Updated</div>
+        </div>
+    </div>
+
+    <!-- Leaderboard Container -->
+    <div class="leaderboard-container">
+        <!-- Table Header -->
+        <div class="leaderboard-table">
+            <div class="table-header">
+                <div>Rank</div>
+                <div>Player</div>
+                <div>Trophies</div>
+                <div>Win Rate</div>
+                <div>Clan</div>
+                <div>Level</div>
+            </div>
+
+            <!-- Table Rows -->
+            {% if players %}
+                {% for entry in players %}
+                <div class="table-row {% if entry.is_current_user %}you{% endif %}"
+                     id="{% if entry.is_current_user %}your-rank{% endif %}">
+
+                    <!-- Rank -->
+                    <div>
+                        <div class="rank-badge
+                            {% if entry.rank == 1 %}rank-1
+                            {% elif entry.rank == 2 %}rank-2
+                            {% elif entry.rank == 3 %}rank-3
+                            {% else %}rank-other{% endif %}">
+                            #{{ entry.rank }}
+                        </div>
+                    </div>
+
+                    <!-- Player Info -->
+                    <div>
+                        <div class="player-info">
+                            <div class="player-avatar">
+                                {{ entry.player.player_name|slice:":1"|upper }}
+                            </div>
+                            <div class="player-details">
+                                <div class="player-name">
+                                    {{ entry.player.player_name }}
+                                    {% if entry.is_current_user %}
+                                    <span style="color: #3b82f6; font-size: 0.8rem;">(You)</span>
+                                    {% endif %}
+                                    {% if entry.player.is_mock %}
+                                    <span style="color: #94a3b8; font-size: 0.7rem;">(Demo)</span>
+                                    {% endif %}
+                                </div>
+                                <div class="player-tag">{{ entry.player.player_tag }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Trophies -->
+                    <div class="trophy-count">
+                        🏆 {{ entry.trophies }}
+                    </div>
+
+                    <!-- Win Rate -->
+                    <div class="win-rate">
+                        {{ entry.win_rate }}
+                    </div>
+
+                    <!-- Clan -->
+                    <div>
+                        {% if entry.player.clan_name %}
+                        <span class="clan-badge">{{ entry.player.clan_name }}</span>
+                        {% else %}
+                        <span style="color: #94a3b8; font-size: 0.9rem;">No Clan</span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Level -->
+                    <div>
+                        <span style="color: #f1f5f9; font-weight: 500;">{{ entry.player.level }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <!-- Empty State -->
+                <div class="empty-state">
+                    <h3>No players yet</h3>
+                    <p>Be the first to connect your Clash Royale account!</p>
+                    <a href="{% url 'connect_clash_royale' %}" class="btn-warning" style="margin-top: 1rem;">
+                        Connect Now
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Pagination (simplified) -->
+        {% if players|length >= 20 %}
+        <div class="pagination">
+            <button class="page-btn active">1</button>
+            <button class="page-btn">2</button>
+            <button class="page-btn">3</button>
+            <button class="page-btn">4</button>
+            <button class="page-btn">5</button>
+        </div>
+        {% endif %}
+
+        <!-- Connect CTA -->
+        {% if user.is_authenticated and not has_clash_royale %}
+        <div style="text-align: center; margin-top: 3rem;">
+            <h3 style="color: #f1f5f9; margin-bottom: 1rem;">Ready to join the leaderboard?</h3>
+            <a href="{% url 'connect_clash_royale' %}" class="btn-warning" style="padding: 1rem 2rem; font-size: 1.1rem;">
+                🔗 Connect Your Clash Royale Account
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>🎮 ULTIMATE GAMING HUB © 2025 - Clash Royale Leaderboard</p>
+        <p style="margin-top: 0.5rem; font-size: 0.8rem;">
+            <a href="{% url 'about_clash_royale' %}" style="color: #60a5fa; margin: 0 0.5rem;">About</a> •
+            <a href="/contact/" style="color: #60a5fa; margin: 0 0.5rem;">Contact</a>
+        </p>
+    </footer>
+
+    <script>
+        // Auto-scroll to user's position
+        document.addEventListener('DOMContentLoaded', function() {
+            const userRow = document.querySelector('.table-row.you');
+            if (userRow) {
+                setTimeout(() => {
+                    userRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 500);
+            }
+
+            // Auto-refresh every 2 minutes
+            setTimeout(() => {
+                window.location.reload();
+            }, 120000);
+        });
+
+        // Simple pagination
+        document.querySelectorAll('.page-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.page-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                // In real implementation, this would load new page
+            });
+        });
+    </script>
+</body>
+</html>

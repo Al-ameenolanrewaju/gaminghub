@@ -1,0 +1,75 @@
+<!-- templates/emails/room_notification.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>New Room Created - {{ site_name }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px;
+        }
+        .content {
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .footer {
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+            margin-top: 30px;
+        }
+        .room-details {
+            background-color: white;
+            padding: 15px;
+            border-left: 4px solid #4CAF50;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎮 New Gaming Room Created</h1>
+    </div>
+
+    <div class="content">
+        <p>Hello,</p>
+
+        <p>A new gaming room has been created on {{ site_name }}:</p>
+
+        <div class="room-details">
+            <h3>{{ room.name }}</h3>
+            <p><strong>Host:</strong> {{ room.host.username }}</p>
+            <p><strong>Game:</strong> {{ room.game }}</p>
+            <p><strong>Description:</strong> {{ room.description|linebreaksbr }}</p>
+            <p><strong>Created:</strong> {{ room.created|date:"F d, Y H:i" }}</p>
+        </div>
+
+        <p>Join the room and start gaming with other players!</p>
+
+        <p style="text-align: center; margin: 30px 0;">
+            <a href="{{ room_url }}" style="background-color: #4CAF50; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold;">
+                Join Room Now
+            </a>
+        </p>
+    </div>
+
+    <div class="footer">
+        <p>This is an automated notification from {{ site_name }}.</p>
+        <p>If you did not expect this email, please ignore it.</p>
+    </div>
+</body>
+</html>

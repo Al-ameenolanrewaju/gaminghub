@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Game Hub - Select Game</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #f1f5f9;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 20px;
+            border: 2px solid #334155;
+        }
+
+        h1 {
+            font-size: 3rem;
+            background: linear-gradient(90deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #94a3b8;
+            font-size: 1.2rem;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .game-card {
+            background: rgba(30, 41, 59, 0.9);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            border: 2px solid #334155;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            border-color: #60a5fa;
+            box-shadow: 0 10px 25px rgba(96, 165, 250, 0.2);
+        }
+
+        .game-icon {
+            font-size: 4rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .game-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #e2e8f0;
+        }
+
+        .game-desc {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.2s;
+        }
+
+        .btn-submit {
+            background: linear-gradient(90deg, #10b981, #34d399);
+            color: white;
+        }
+
+        .btn-leaderboard {
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: scale(1.05);
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 40px;
+            padding: 20px;
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 15px;
+        }
+
+        .nav-btn {
+            padding: 12px 25px;
+            background: #475569;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .nav-btn:hover {
+            background: #64748b;
+        }
+         /* Navigation */
+        .navbar {
+            background: #1e293b;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid #3b82f6;
+
+        }
+        .logo { font-size: 1.8rem; font-weight: bold; color: #60a5fa; text-decoration: none; }
+        .logo:hover { color: #93c5fd; }
+        .nav-links { display: flex; gap: 1.5rem; }
+        .nav-link { color: #cbd5e1; text-decoration: none; padding: 0.5rem 1rem; border-radius: 5px; }
+        .nav-link:hover { background: #334155; color: #60a5fa; }
+        .btn { background: #3b82f6; color: white; padding: 0.6rem 1.2rem; border-radius: 5px; text-decoration: none; border: none; cursor: pointer; }
+        .btn:hover { background: #2563eb; }
+        .btn-success { background: #10b981; }
+        .btn-success:hover { background: #059669; }
+
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+            border-top: 1px solid #334155;
+            color: #94a3b8;
+            background: #1e293b;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: #60a5fa;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: #3b82f6;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+     <!-- Navigation -->
+    <nav class="navbar">
+        <a href="/" class="logo">🎮 ULTIMATE GAMING HUB</a>
+        <div class="nav-links">
+            <a href="/" class="nav-link">🏠 Home</a>
+             <a href="{% url 'tournament_list' %}" class="nav-link">🏆 Tournaments</a>
+            <a href="/games/" class="nav-link">🎮 Games</a>
+             <!-- Add this to your nav-links -->
+<a href="/clash-royale/" class="nav-link" style="color: #f59e0b;">👑 Clash Royale</a>
+            <a href="/create-room/" class="nav-link">➕ Create Room</a>
+            {% if user.is_authenticated %}
+             <a href="{% url 'user_tournaments' %}" class="nav-link">📋 My Tournaments</a>
+                <a href="{% url 'profile' user.username %}" class="nav-link">👤 {{ user.username }}</a>
+                <form method="post" action="{% url 'logout' %}" style="display: inline;">
+    {% csrf_token %}
+    <button type="submit" class="btn">Logout</button>
+</form>
+            {% else %}
+                <a href="/login/" class="nav-link">Login</a>
+                <a href="/register/" class="btn">Sign Up</a>
+            {% endif %}
+        </div>
+    </nav>
+    <div class="container">
+        <header>
+            <h1>🎮 Game Hub Leaderboards</h1>
+            <p class="subtitle">Submit your game stats and compete with players worldwide</p>
+        </header>
+
+        <div class="games-grid">
+            <!-- FIFA Mobile -->
+            <div class="game-card">
+                <span class="game-icon">⚽</span>
+                <h3 class="game-name">FIFA Mobile</h3>
+                <p class="game-desc">Soccer simulation. Score goals, make assists, win matches.</p>
+                <div class="btn-group">
+                    <a href="{% url 'submit_fifa' %}" class="btn btn-submit">📤 Submit Stats</a>
+                    <a href="{% url 'fifa_leaderboard' %}" class="btn btn-leaderboard">🏆 Leaderboard</a>
+                </div>
+            </div>
+
+            <!-- PUBG Mobile -->
+            <div class="game-card">
+                <span class="game-icon">🔫</span>
+                <h3 class="game-name">PUBG Mobile</h3>
+                <p class="game-desc">Battle Royale. Get kills, survive, win chicken dinners.</p>
+                <div class="btn-group">
+                    <a href="{% url 'submit_pubg' %}" class="btn btn-submit">📤 Submit Stats</a>
+                    <a href="{% url 'pubg_leaderboard' %}" class="btn btn-leaderboard">🏆 Leaderboard</a>
+                </div>
+            </div>
+
+            <!-- Clash of Clans -->
+            <div class="game-card">
+                <span class="game-icon">🏰</span>
+                <h3 class="game-name">Clash of Clans</h3>
+                <p class="game-desc">Strategy game. Collect trophies, upgrade town hall.</p>
+                <div class="btn-group">
+                    <a href="{% url 'submit_coc' %}" class="btn btn-submit">📤 Submit Stats</a>
+                    <a href="{% url 'coc_leaderboard' %}" class="btn btn-leaderboard">🏆 Leaderboard</a>
+                </div>
+            </div>
+
+            <!-- Asphalt 9 -->
+            <div class="game-card">
+                <span class="game-icon">🏎</span>
+                <h3 class="game-name">Asphalt 9</h3>
+                <p class="game-desc">Racing game. Win races, set best times, upgrade cars.</p>
+                <div class="btn-group">
+                    <a href="{% url 'submit_asphalt' %}" class="btn btn-submit">📤 Submit Stats</a>
+                    <a href="{% url 'asphalt_leaderboard' %}" class="btn btn-leaderboard">🏆 Leaderboard</a>
+                </div>
+            </div>
+
+            <!-- Mobile Legends -->
+            <div class="game-card">
+                <span class="game-icon">⚔</span>
+                <h3 class="game-name">Mobile Legends</h3>
+                <p class="game-desc">MOBA game. Get kills, assists, destroy turrets.</p>
+                <div class="btn-group">
+                    <a href="{% url 'submit_ml' %}" class="btn btn-submit">📤 Submit Stats</a>
+                    <a href="{% url 'ml_leaderboard' %}" class="btn btn-leaderboard">🏆 Leaderboard</a>
+                </div>
+            </div>
+
+            <!-- Dream League Soccer -->
+            <div class="game-card">
+                <span class="game-icon">🥅</span>
+                <h3 class="game-name">Dream League Soccer</h3>
+                <p class="game-desc">Soccer management. Build team, score goals, win cups.</p>
+                <div class="btn-group">
+                    <a href="{% url 'submit_dls' %}" class="btn btn-submit">📤 Submit Stats</a>
+                    <a href="{% url 'dls_leaderboard' %}" class="btn btn-leaderboard">🏆 Leaderboard</a>
+                </div>
+            </div>
+
+            <!-- eFootball -->
+            <div class="game-card">
+                <span class="game-icon">🎮</span>
+                <h3 class="game-name">eFootball</h3>
+                <p class="game-desc">Pro soccer. Master skills, win tournaments.</p>
+                <div class="btn-group">
+                    <a href="{% url 'submit_efootball' %}" class="btn btn-submit">📤 Submit Stats</a>
+                    <a href="{% url 'efootball_leaderboard' %}" class="btn btn-leaderboard">🏆 Leaderboard</a>
+                </div>
+            </div>
+
+            <!-- Call of Duty -->
+            <div class="game-card">
+                <span class="game-icon">🎯</span>
+                <h3 class="game-name">Call of Duty</h3>
+                <p class="game-desc">FPS combat. Eliminate enemies, complete objectives.</p>
+                <div class="btn-group">
+                    <a href="{% url 'submit_cod' %}" class="btn btn-submit">📤 Submit Stats</a>
+                    <a href="{% url 'cod_leaderboard' %}" class="btn btn-leaderboard">🏆 Leaderboard</a>
+                </div>
+            </div>
+        </div>
+    <footer class="footer">
+        <p>🎮 ULTIMATE GAMING HUB © 2025 - Connect with gamers worldwide</p>
+        <div class="footer-links">
+            <a href="/about/">About</a>
+            <a href="/contact/">Contact</a>
+            <a href="/terms/">Terms</a>
+            <a href="/privacy/">Privacy</a>
+            <a href="/games/">Games</a>
+        </div>
+    </footer>
+
+
+    </div>
+</body>
+</html>

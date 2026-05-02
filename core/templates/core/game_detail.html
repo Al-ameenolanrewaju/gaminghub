@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 Game Details - Ultimate Gaming Hub</title>
+    <style>
+        /* All the same CSS styles from your original file */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0f172a; color: #e2e8f0; }
+
+        /* Navigation - EXACT COPY */
+        .navbar {
+            background: #1e293b;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid #3b82f6;
+        }
+        .logo { font-size: 1.8rem; font-weight: bold; color: #60a5fa; text-decoration: none; }
+        .logo:hover { color: #93c5fd; }
+        .nav-links { display: flex; gap: 1.5rem; }
+        .nav-link { color: #cbd5e1; text-decoration: none; padding: 0.5rem 1rem; border-radius: 5px; }
+        .nav-link:hover { background: #334155; color: #60a5fa; }
+        .btn { background: #3b82f6; color: white; padding: 0.6rem 1.2rem; border-radius: 5px; text-decoration: none; border: none; cursor: pointer; }
+        .btn:hover { background: #2563eb; }
+        .btn-success { background: #10b981; }
+        .btn-success:hover { background: #059669; }
+
+        /* Sections - EXACT COPY */
+        .section { max-width: 1200px; margin: 0 auto 3rem; padding: 0 1rem; }
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: #60a5fa;
+            border-left: 4px solid #3b82f6;
+            padding-left: 1rem;
+        }
+
+        /* Game Cards - EXACT COPY */
+        .game-card {
+            background: #1e293b;
+            border-radius: 10px;
+            padding: 1.5rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid #334155;
+        }
+        .game-card:hover {
+            transform: translate(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            border-color: #3b82f6;
+        }
+        .game-genre { display: inline-block; background: #475569; color: white; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.9rem; margin-bottom: 1rem; }
+        .game-title { font-size: 1.3rem; margin-bottom: 0.5rem; color: #f1f5f9; }
+        .game-desc { color: #94a3b8; margin-bottom: 1rem; font-size: 0.95rem; }
+
+        /* Room Cards - EXACT COPY */
+        .room-card {
+            background: #1e293b;
+            border-radius: 10px;
+            padding: 1.5rem;
+            border-left: 4px solid #10b981;
+        }
+
+        /* Stats - EXACT COPY */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 2rem; }
+        .stat-box {
+            background: #1e293b;
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid #334155;
+        }
+        .stat-number { font-size: 2.5rem; color: #60a5fa; font-weight: bold; }
+        .stat-label { color: #94a3b8; margin-top: 0.5rem; }
+
+        /* Footer - EXACT COPY */
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+            border-top: 1px solid #334155;
+            color: #94a3b8;
+        }
+
+        /* Responsive - EXACT COPY */
+        @media (max-width: 768px) {
+            .navbar { flex-direction: column; gap: 1rem; }
+            .nav-links { flex-wrap: wrap; justify-content: center; }
+            .hero h1 { font-size: 2rem; }
+        }
+
+        /* NEW STYLES FOR DETAILS PAGE */
+        .details-hero {
+            background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%);
+            padding: 3rem 2rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #334155;
+        }
+
+        .game-header {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .game-header {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        .game-icon-large {
+            font-size: 4rem;
+            background: #334155;
+            padding: 1.5rem;
+            border-radius: 15px;
+            border: 3px solid #3b82f6;
+        }
+
+        .game-info-header h1 {
+            font-size: 2.5rem;
+            color: #f1f5f9;
+            margin-bottom: 0.5rem;
+        }
+
+        .game-meta {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .platform-badge {
+            background: #475569;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .featured-badge {
+            background: #f59e0b;
+            color: #0f172a;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .details-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        @media (max-width: 992px) {
+            .details-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .details-main .game-card {
+            margin-bottom: 1.5rem;
+        }
+
+        .game-description-full {
+            color: #cbd5e1;
+            line-height: 1.6;
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .feature-item {
+            background: #334155;
+            padding: 1rem;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .feature-icon {
+            color: #60a5fa;
+            font-size: 1.2rem;
+        }
+
+        .requirements {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .req-item {
+            background: #334155;
+            padding: 1rem;
+            border-radius: 8px;
+        }
+
+        .req-title {
+            color: #60a5fa;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .sidebar-stats {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .btn-large {
+            padding: 1rem;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #3b82f6;
+            color: #3b82f6;
+        }
+
+        .btn-outline:hover {
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .screenshots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .screenshot {
+            background: #334155;
+            height: 150px;
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+            font-size: 2rem;
+        }
+
+        .related-rooms {
+            margin-top: 2rem;
+        }
+
+        .room-item {
+            background: #1e293b;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .room-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .room-host {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb {
+            padding: 1rem 2rem;
+            background: #1e293b;
+            border-bottom: 1px solid #334155;
+        }
+
+        .breadcrumb a {
+            color: #60a5fa;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .breadcrumb span {
+            color: #94a3b8;
+            margin: 0 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation with Django Authentication Logic -->
+    <nav class="navbar">
+        <a href="{% url 'home' %}" class="logo">🎮 ULTIMATE GAMING HUB</a>
+        <div class="nav-links">
+            <a href="{% url 'home' %}" class="nav-link">🏠 Home</a>
+            <a href="{% url 'game_list' %}" class="nav-link">🎮 Games</a>
+            <a href="{% url 'create_room' %}" class="nav-link">➕ Create Room</a>
+
+            {% if user.is_authenticated %}
+                <span class="nav-link">👤 {{ user.username }}</span>
+                <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn">Logout</button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}" class="nav-link">Login</a>
+                <a href="{% url 'register' %}" class="btn">Sign Up</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <!-- Game Hero Section -->
+<section class="details-hero" style="border: 2px solid #3b82f6; border-radius: 10px; margin: 1rem auto; max-width: 1200px;">
+    <div class="game-header">
+        <div class="game-icon-large">
+            {% if game.genre == 'STRATEGY' %}🏰
+            {% elif game.genre == 'RACING' %}🏎
+            {% elif game.genre == 'FOOTBALL' %}⚽
+            {% elif game.genre == 'MOBA' %}🗡
+            {% elif game.genre == 'BATTLE_ROYALE' %}🎯
+            {% else %}🎮{% endif %}
+        </div>
+        <div class="game-info-header">
+            <h1>{{ game.name }}</h1>
+            <div class="game-meta">
+                <span class="game-genre">{{ game.get_genre_icon }} {{ game.get_genre_display }}</span>
+                <span class="platform-badge">{{ game.get_platform_display }}</span>
+
+                {% if game.is_featured %}
+                <span class="featured-badge">FEATURED</span>
+                {% endif %}
+
+                {% if game.is_new %}
+                <span style="background: #10b981; color: white; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.9rem;">
+                    NEW
+                </span>
+                {% endif %}
+            </div>
+            <p style="color: #cbd5b8; max-width: 600px;">
+                {{ game.description }}
+            </p>
+        </div>
+    </div>
+</section>
+
+    <!-- Main Content -->
+    <div class="details-content">
+        <!-- Left Column - Main Details -->
+        <div class="details-main">
+            <!-- Description Card -->
+            <div class="game-card">
+                <h3 class="game-title">📖 Game Description</h3>
+                <p class="game-description-full">
+                    {{ game.description|linebreaks }}
+                </p>
+
+                {% if game.trailer_url %}
+                <div style="margin-top: 1.5rem; text-align: center;">
+                    <a href="{{ game.trailer_url }}" target="_blank" class="btn" style="display: inline-flex; align-items: center; gap: 0.5rem;">
+                        <span>▶</span> Watch Trailer
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Key Features -->
+            <div class="game-card">
+                <h3 class="game-title">✨ Key Features</h3>
+                <div class="features-grid">
+                    {% if game.features %}
+                        {% for feature in game.features.splitlines %}
+                        <div class="feature-item">
+                            <span class="feature-icon">✅</span>
+                            <span>{{ feature }}</span>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <!-- Default features based on genre -->
+                        {% if game.genre == 'STRATEGY' %}
+                        <div class="feature-item">
+                            <span class="feature-icon">🏗</span>
+                            <span>Build & upgrade your base</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">⚔</span>
+                            <span>Battle with players worldwide</span>
+                        </div>
+                        {% elif game.genre == 'FOOTBALL' %}
+                        <div class="feature-item">
+                            <span class="feature-icon">⚽</span>
+                            <span>Realistic football gameplay</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">👥</span>
+                            <span>Multiplayer matches</span>
+                        </div>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- System Requirements -->
+            <div class="game-card">
+                <h3 class="game-title">📱 System Requirements</h3>
+                <div class="requirements">
+                    {% if game.minimum_requirements %}
+                        {% for req in game.minimum_requirements_as_list %}
+                        <div class="req-item">
+                            <div class="req-title">{{ req.0 }}</div>
+                            <div>{{ req.1 }}</div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                    <div class="req-item">
+                        <div class="req-title">PLATFORM</div>
+                        <div>{{ game.get_platform_display }}</div>
+                    </div>
+                    <div class="req-item">
+                        <div class="req-title">STORAGE</div>
+                        <div>1 GB free space</div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Game Stats (MOVED UNDER SYSTEM REQUIREMENTS) -->
+            <!-- Game Stats (MOVED UNDER SYSTEM REQUIREMENTS) -->
+<div class="game-card">
+    <h3 class="game-title">📊 Game Stats</h3>
+    <div class="sidebar-stats" style="grid-template-columns: repeat(3, 1fr); gap: 0.8rem;">
+        <div class="stat-box" style="padding: 1rem;">
+            <div class="stat-number" style="font-size: 1.8rem;">{{ game.rating|default:"4.5" }}</div>
+            <div class="stat-label" style="font-size: 0.8rem;">Rating</div>
+        </div>
+        <div class="stat-box" style="padding: 1rem;">
+            <div class="stat-number" style="font-size: 1.8rem;">{{ game.download_count|default:"10M+" }}</div>
+            <div class="stat-label" style="font-size: 0.8rem;">Downloads</div>
+        </div>
+        <div class="stat-box" style="padding: 1rem;">
+            <div class="stat-number" style="font-size: 1.8rem;">{{ game.release_year|default:"2020" }}</div>
+            <div class="stat-label" style="font-size: 0.8rem;">Released</div>
+        </div>
+    </div>
+</div>
+            <!-- Screenshots -->
+            {% if game.screenshots.all %}
+            <div class="game-card">
+                <h3 class="game-title">🖼 Game Screenshots</h3>
+                <div class="screenshots-grid">
+                    {% for screenshot in game.screenshots.all|slice:":4" %}
+                    <div class="screenshot" style="background: #334155 url('{{ screenshot.image.url }}') center/cover;">
+                        <!-- Image will be background -->
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Right Column - Sidebar -->
+        <div class="sidebar">
+            <!-- Action Buttons -->
+            <div class="game-card">
+                <h3 class="game-title">🎯 Quick Actions</h3>
+                <div class="action-buttons">
+                    <a href="{% url 'create_room' %}?game={{ game.id }}" class="btn btn-large">
+                        ➕ Create Room
+                    </a>
+
+                    {% if game.download_url %}
+                    <a href="{{ game.download_url }}" target="_blank" class="btn btn-success btn-large">
+                        🎮 Download Game
+                    </a>
+                    {% else %}
+                    <button class="btn btn-success btn-large" onclick="alert('Download link not available')">
+                        🎮 Join Game
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Game Info (MOVED UNDER QUICK ACTIONS) -->
+            <div class="game-card">
+                <h3 class="game-title">ℹ Game Info</h3>
+                <div style="display: grid; gap: 1rem;">
+                    {% if game.developer %}
+                    <div>
+                        <div style="color: #94a3b8; font-size: 0.9rem;">Developer</div>
+                        <div style="color: #f1f5f9;">{{ game.developer }}</div>
+                    </div>
+                    {% endif %}
+
+                    {% if game.publisher %}
+                    <div>
+                        <div style="color: #94a3b8; font-size: 0.9rem;">Publisher</div>
+                        <div style="color: #f1f5f9;">{{ game.publisher }}</div>
+                    </div>
+                    {% endif %}
+
+                    <div>
+                        <div style="color: #94a3b8; font-size: 0.9rem;">Price</div>
+                        <div style="color: #f1f5f9;">
+                            {% if game.price == 0 %}
+                            Free
+                            {% elif game.price %}
+                            ${{ game.price }}
+                            {% else %}
+                            Free (In-app purchases)
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% if game.last_updated %}
+                    <div>
+                        <div style="color: #94a3b8; font-size: 0.9rem;">Last Updated</div>
+                        <div style="color: #f1f5f9;">{{ game.last_updated|date:"F Y" }}</div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Related Rooms (MOVED UNDER QUICK ACTIONS) -->
+            <div class="game-card related-rooms">
+                <h3 class="game-title">👥 Active Rooms</h3>
+
+                {% if active_rooms %}
+                    {% for room in active_rooms|slice:":2" %}
+                    <div class="room-item">
+                        <div class="room-header">
+                            <div>
+                                <h4 style="color: #f1f5f9;">{{ room.title|truncatechars:20 }}</h4>
+                                <p style="color: #60a5fa; font-size: 0.9rem;">
+                                    {{ room.game.get_genre_icon }} {{ room.game.name }}
+                                </p>
+                            </div>
+                            <div class="room-host">👑 {{ room.host.username|truncatechars:10 }}</div>
+                        </div>
+                        <p style="color: #94a3b8; font-size: 0.9rem;">{{ room.description|truncatechars:50 }}</p>
+                        <div style="display: flex; gap: 0.5rem; margin-top: 0.8rem;">
+                            <span style="background: #10b981; color: white; padding: 0.2rem 0.6rem; border-radius: 5px; font-size: 0.8rem;">
+                                {{ room.current_players }}/{{ room.max_players }} slots
+                            </span>
+                            <a href="{{ room.join_link }}" class="btn" style="padding: 0.3rem 0.8rem; font-size: 0.8rem;">Join</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                <div class="room-item">
+                    <p style="color: #94a3b8; text-align: center; padding: 1rem;">No active rooms for this game</p>
+                </div>
+                {% endif %}
+
+                <div style="text-align: center; margin-top: 1rem;">
+                    <a href="{% url 'create_room' %}?game={{ game.id }}" class="btn" style="width: 100%;">
+                        {% if active_rooms %}View All Rooms{% else %}Create First Room{% endif %}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>🎮 ULTIMATE GAMING HUB © 2025 - Connect with gamers worldwide</p>
+        <p style="margin-top: 1rem; font-size: 0.9rem;">
+            <a href="/about/" style="color: #60a5fa; margin: 0 0.5rem;">About</a> •
+            <a href="/contact/" style="color: #60a5fa; margin: 0 0.5rem;">Contact</a> •
+            <a href="/terms/" style="color: #60a3b8; margin: 0 0.5rem;">Terms</a> •
+            <a href="/privacy/" style="color: #60a5fa; margin: 0 0.5rem;">Privacy</a>
+        </p>
+    </footer>
+
+    <!-- Django JavaScript -->
+    <script>
+        // CSRF token for AJAX requests
+        const csrfToken = "{{ csrf_token }}";
+
+        // Game ID for dynamic operations
+        const gameId = "{{ game.id }}";
+
+        // User authentication status
+        const isAuthenticated = "{{ user.is_authenticated }}" === "True";
+
+        // Favorite toggle function
+        function toggleFavorite() {
+            if (!isAuthenticated) {
+                window.location.href = "{% url 'login' %}?next={{ request.path }}";
+                return;
+            }
+
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'added') {
+                    alert('Added to favorites!');
+                } else if (data.status === 'removed') {
+                    alert('Removed from favorites!');
+                }
+                location.reload();
+            });
+        }
+
+        // Handle screenshot clicks
+        document.querySelectorAll('.screenshot').forEach(screenshot => {
+            screenshot.addEventListener('click', function() {
+                // Open lightbox or fullscreen view
+                alert('Screenshot view would open here');
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - Gaming Hub</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; display: flex; flex-direction: column; }
+
+        .navbar {
+            background: #1e293b;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid #3b82f6;
+        }
+        .logo { font-size: 1.8rem; font-weight: bold; color: #60a5fa; text-decoration: none; }
+        .nav-links { display: flex; gap: 1.5rem; }
+        .nav-link { color: #cbd5e1; text-decoration: none; padding: 0.5rem 1rem; border-radius: 5px; }
+        .nav-link:hover { background: #334155; color: #60a5fa; }
+        .btn { background: #3b82f6; color: white; padding: 0.6rem 1.2rem; border-radius: 5px; text-decoration: none; border: none; cursor: pointer; }
+        .btn:hover { background: #2563eb; }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            flex: 1;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%);
+            padding: 4rem 2rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            border-radius: 0 0 20px 20px;
+        }
+        .hero h1 { font-size: 3rem; margin-bottom: 1rem; color: #60a5fa; }
+        .hero p { font-size: 1.2rem; max-width: 800px; margin: 0 auto; color: #cbd5e1; }
+
+        .content-card {
+            background: #1e293b;
+            border-radius: 10px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid #334155;
+        }
+        .section-title {
+            font-size: 1.8rem;
+            color: #60a5fa;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid #3b82f6;
+            padding-left: 1rem;
+        }
+        .section-text { color: #cbd5e1; line-height: 1.6; margin-bottom: 1.5rem; }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        .stat-card {
+            background: #334155;
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .stat-number { font-size: 2.5rem; color: #60a5fa; font-weight: bold; }
+        .stat-label { color: #94a3b8; margin-top: 0.5rem; }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        .team-card {
+            background: #334155;
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .team-avatar {
+            width: 80px;
+            height: 80px;
+            background: #3b82f6;
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+            border-top: 1px solid #334155;
+            color: #94a3b8;
+        }
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+        .footer-links a {
+            color: #60a5fa;
+            text-decoration: none;
+        }
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" class="logo">🎮 ULTIMATE GAMING HUB</a>
+        <div class="nav-links">
+            <a href="/" class="nav-link">🏠 Home</a>
+            <a href="/games/" class="nav-link">🎮 Games</a>
+            <a href="/about/" class="nav-link" style="color: #f59e0b;">📖 About</a>
+            <a href="/contact/" class="nav-link">📞 Contact</a>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <h1>About Gaming Hub</h1>
+        <p>Connecting gamers worldwide since 2023. Your ultimate platform for multiplayer gaming, tournaments, and community.</p>
+    </div>
+
+    <div class="container">
+        <!-- Our Story -->
+        <div class="content-card">
+            <h2 class="section-title">Our Story</h2>
+            <p class="section-text">
+                Gaming Hub was born from a simple idea: gamers should have a central place to connect, compete, and collaborate.
+                Founded in 2023 by a team of passionate gamers, we've grown into a community of thousands of players worldwide.
+            </p>
+            <p class="section-text">
+                We believe gaming is more than just entertainment—it's about connection, strategy, and shared experiences.
+                That's why we built Gaming Hub: to bring gamers together in one powerful platform.
+            </p>
+        </div>
+
+        <!-- Our Mission -->
+        <div class="content-card">
+            <h2 class="section-title">Our Mission</h2>
+            <p class="section-text">
+                To create the ultimate gaming ecosystem where players of all skill levels can find teammates,
+                join tournaments, and elevate their gaming experience.
+            </p>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">10K+</div>
+                    <div class="stat-label">Active Gamers</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">50+</div>
+                    <div class="stat-label">Games Supported</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">1K+</div>
+                    <div class="stat-label">Daily Matches</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">Active Support</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Our Team -->
+        <div class="content-card">
+            <h2 class="section-title">Meet Our Team</h2>
+            <div class="team-grid">
+                <div class="team-card">
+                    <div class="team-avatar">👑</div>
+                    <h3>Al-ameen olanrewaju</h3>
+                    <p style="color: #94a3b8;">Founder & CEO</p>
+                    <p style="margin-top: 0.5rem; font-size: 0.9rem;">Former pro gamer turned entrepreneur</p>
+                </div>
+                <div class="team-card">
+                    <div class="team-avatar">🎨</div>
+                    <h3></h3>
+                    <p style="color: #94a3b8;">Lead Designer</p>
+                    <p style="margin-top: 0.5rem; font-size: 0.9rem;">Creating beautiful gaming experiences</p>
+                </div>
+                <div class="team-card">
+                    <div class="team-avatar">⚡</div>
+                    <h3></h3>
+                    <p style="color: #94a3b8;">Tech Lead</p>
+                    <p style="margin-top: 0.5rem; font-size: 0.9rem;">Building the platform gamers love</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Values -->
+        <div class="content-card">
+            <h2 class="section-title">Our Values</h2>
+            <div style="display: grid; gap: 1rem;">
+                <div style="background: #334155; padding: 1rem; border-radius: 8px;">
+                    <h3 style="color: #60a5fa;">🎮 Community First</h3>
+                    <p style="color: #cbd5e1; margin-top: 0.5rem;">We prioritize our gaming community in every decision we make.</p>
+                </div>
+                <div style="background: #334155; padding: 1rem; border-radius: 8px;">
+                    <h3 style="color: #60a5fa;">🏆 Fair Play</h3>
+                    <p style="color: #cbd5e1; margin-top: 0.5rem;">We maintain a fair and competitive environment for all players.</p>
+                </div>
+                <div style="background: #334155; padding: 1rem; border-radius: 8px;">
+                    <h3 style="color: #60a5fa;">🚀 Innovation</h3>
+                    <p style="color: #cbd5e1; margin-top: 0.5rem;">We constantly evolve to bring you the best gaming features.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>🎮 ULTIMATE GAMING HUB © 2025 - Connect with gamers worldwide</p>
+        <div class="footer-links">
+            <a href="/about/">About</a>
+            <a href="/contact/">Contact</a>
+            <a href="/terms/">Terms</a>
+            <a href="/privacy/">Privacy</a>
+            <a href="/games/">Games</a>
+        </div>
+    </footer>
+</body>
+</html>

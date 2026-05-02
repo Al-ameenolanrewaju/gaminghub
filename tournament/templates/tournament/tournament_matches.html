@@ -1,0 +1,19 @@
+<!-- tournament/templates/tournament/tournament_matches.html -->
+{% extends 'base.html' %}
+
+{% block title %}Tournament Matches{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>🎮 Tournament Matches</h1>
+    <p class="lead">Matches for Tournament #{{ tournament_id }}</p>
+
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Coming Soon!</h5>
+            <p class="card-text">Match scheduling and tracking feature is under development.</p>
+            <a href="{% url 'tournament_detail' tournament_id %}" class="btn btn-primary">Back to Tournament</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

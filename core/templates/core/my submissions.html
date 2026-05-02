@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Submissions</title>
+    <style>
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .status-pending { background: #fbbf24; color: black; }
+        .status-verified { background: #10b981; color: white; }
+        .status-rejected { background: #ef4444; color: white; }
+        .status-flagged { background: #8b5cf6; color: white; }
+    </style>
+</head>
+<body>
+    <h1>📊 My Submissions</h1>
+
+    <div class="stats">
+        <div>Total: {{ stats.total }}</div>
+        <div>✅ Verified: {{ stats.verified }}</div>
+        <div>⏳ Pending: {{ stats.pending }}</div>
+        <div>❌ Rejected: {{ stats.rejected }}</div>
+    </div>
+
+    <table>
+        <tr>
+            <th>Game</th>
+            <th>Score</th>
+            <th>Status</th>
+            <th>Submitted</th>
+            <th>Verified At</th>
+            <th>Actions</th>
+        </tr>
+        {% for sub in submissions %}
+        <tr>
+            <td>{{ sub.get_game_type_display }}</td>
+            <td>{{ sub.total_score }}</td>
+            <td>
+                <span class="status-badge status-{{ sub.status }}">
+                    {{ sub.get_status_display }}
+                </span>
+            </td>
+            <td>{{ sub.created_at|date:"M d, Y" }}</td>
+            <td>
+                {% if sub.verified_at %}
+                    {{ sub.verified_at|date:"M d, Y" }}
+                {% else %}
+                    --
+                {% endif %}
+            </td>
+            <td>
+                {% if sub.screenshot %}
+                <a href="{{ sub.screenshot.url }}" target="_blank">📸 View Proof</a>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

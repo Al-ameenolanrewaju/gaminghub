@@ -1,0 +1,318 @@
+<!-- core/templates/core/leaderboard_base.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ game_name }} Leaderboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #f1f5f9;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 20px;
+            border: 2px solid #334155;
+        }
+
+        .game-icon {
+            font-size: 5rem;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #60a5fa;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #94a3b8;
+            font-size: 1.1rem;
+        }
+
+        .stats-summary {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .stat-box {
+            background: #1e293b;
+            padding: 15px 25px;
+            border-radius: 10px;
+            border: 1px solid #475569;
+            text-align: center;
+            min-width: 150px;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #60a5fa;
+        }
+
+        .stat-label {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        .leaderboard-table {
+            background: rgba(30, 41, 59, 0.9);
+            border-radius: 15px;
+            overflow: hidden;
+            border: 2px solid #334155;
+            margin-bottom: 30px;
+        }
+
+        .table-header {
+            display: grid;
+            grid-template-columns: 80px 1fr repeat(5, 120px);
+            background: #1e293b;
+            padding: 15px 20px;
+            font-weight: bold;
+            color: #cbd5e1;
+            border-bottom: 2px solid #334155;
+        }
+
+        .table-row {
+            display: grid;
+            grid-template-columns: 80px 1fr repeat(5, 120px);
+            padding: 15px 20px;
+            align-items: center;
+            border-bottom: 1px solid #334155;
+            transition: background 0.3s;
+        }
+
+        .table-row:hover {
+            background: rgba(96, 165, 250, 0.1);
+        }
+
+        .table-row:last-child {
+            border-bottom: none;
+        }
+
+        .rank {
+            font-size: 1.3rem;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .rank-1 { color: #fbbf24; }
+        .rank-2 { color: #cbd5e1; }
+        .rank-3 { color: #f59e0b; }
+
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .player-avatar {
+            width: 40px;
+            height: 40px;
+            background: #475569;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+        }
+
+        .player-name {
+            font-weight: 500;
+        }
+
+        .you-badge {
+            background: #10b981;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-left: 10px;
+        }
+
+        .stat-cell {
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .score {
+            color: #f59e0b;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .actions {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            margin: 0 10px;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .btn-submit {
+            background: linear-gradient(90deg, #10b981, #34d399);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #94a3b8;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .nav-btn {
+            padding: 10px 20px;
+            background: #475569;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .nav-btn:hover {
+            background: #64748b;
+        }
+
+        /* Game-specific stats */
+        .goals-stat { color: #60a5fa; }
+        .kills-stat { color: #ef4444; }
+        .assists-stat { color: #8b5cf6; }
+        .trophies-stat { color: #f59e0b; }
+        .kd-stat { color: #10b981; }
+
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="game-icon">{{ game_icon }}</div>
+            <h1>{{ game_name }} Leaderboard</h1>
+            <p class="subtitle">Top players ranked by performance score</p>
+
+            <div class="stats-summary">
+                <div class="stat-box">
+                    <div class="stat-value">{{ entries.count }}</div>
+                    <div class="stat-label">Total Players</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">
+                        {% if entries.first %}
+                            {{ entries.first.total_score }}
+                        {% else %}
+                            0
+                        {% endif %}
+                    </div>
+                    <div class="stat-label">Top Score</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">
+                        {% if entries.first %}
+                            {{ entries.first.user.username }}
+                        {% else %}
+                            --
+                        {% endif %}
+                    </div>
+                    <div class="stat-label">Top Player</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="leaderboard-table">
+            <!-- Table Headers - Will be filled by each game -->
+            <div class="table-header">
+                <div>Rank</div>
+                <div>Player</div>
+                <!-- Game-specific headers -->
+                {% block table_headers %}{% endblock %}
+                <div>Score</div>
+            </div>
+
+            {% if entries %}
+                {% for entry in entries %}
+                <div class="table-row">
+                    <div class="rank {% if forloop.counter == 1 %}rank-1{% elif forloop.counter == 2 %}rank-2{% elif forloop.counter == 3 %}rank-3{% endif %}">
+                        {{ forloop.counter }}
+                    </div>
+
+                    <div class="player-info">
+    <div class="player-avatar">
+        {{ entry.user.username|first|upper }}
+    </div>
+    <div>
+        <!-- MAKE THIS CLICKABLE -->
+        <a href="{% url 'profile' entry.user.username %}" style="text-decoration: none; color: inherit;">
+            <span class="player-name">{{ entry.user.username }}</span>
+        </a>
+        {% if entry.user == request.user %}
+        <span class="you-badge">You</span>
+        {% endif %}
+    </div>
+</div>
+
+                    <!-- Game-specific stats -->
+                    {% block table_stats %}{% endblock %}
+
+                    <div class="stat-cell score">{{ entry.total_score }}</div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-icon">📊</div>
+                    <h2>No Submissions Yet</h2>
+                    <p>Be the first to submit your {{ game_name }} stats!</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="actions">
+            <a href="/games/" class="btn">🎮 All Games</a>
+        </div>
+
+
+    </div>
+</body>
+</html>
