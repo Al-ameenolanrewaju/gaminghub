@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}My submissions · Gaming Hub{% endblock %}
+{% block content %}
+<section class="hero">
+    <h1>My stat submissions</h1>
+    <p>Review status for your submitted game stats.</p>
+</section>
+{% if notice %}<p class="card" role="status">{{ notice }}</p>{% endif %}
+<section class="grid" aria-label="Submission totals">
+    <div class="card"><strong>{{ counts.total }}</strong><br>Total</div>
+    <div class="card"><strong>{{ counts.verified }}</strong><br>Verified</div>
+    <div class="card"><strong>{{ counts.pending }}</strong><br>Pending</div>
+    <div class="card"><strong>{{ counts.rejected }}</strong><br>Rejected</div>
+</section>
+<div class="card" style="margin-top:1rem; overflow-x:auto">
+    {% if submissions %}
+    <table style="width:100%; border-collapse:collapse">
+        <thead><tr><th scope="col">Game</th><th scope="col">Score</th><th scope="col">Status</th><th scope="col">Submitted</th><th scope="col">Review</th></tr></thead>
+        <tbody>
+        {% for submission in submissions %}
+        <tr>
+            <td>{{ game_names.get(submission.game_type, submission.game_type) }}</td>
+            <td>{{ submission.total_score }}</td>
+            <td>{{ submission.status|capitalize }}</td>
+            <td>
+                <time>{{ submission.created_at }}</time>
+                {% if submission.screenshot %}
+                <br><a href="{{ url_for('main.media_file', filename=submission.screenshot) }}" target="_blank" rel="noopener">View proof</a>
+                {% endif %}
+            </td>
+            <td>
+                {% if submission.status == "verified" and submission.verified_at %}Verified {{ submission.verified_at }}
+                {% elif submission.status == "rejected" and submission.rejection_reason %}{{ submission.rejection_reason }}
+                {% elif submission.status == "pending" %}Awaiting review
+                {% else %}—{% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>You have not submitted any stats yet. <a href="{{ url_for('stats.select_game') }}">Choose a game to get started</a>.</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Gaming Hub{% endblock %}
+{% block content %}
+<section class="hero home-hero">
+    <h1>CONNECT. PLAY. DOMINATE.</h1>
+    <p class="home-intro">Your ultimate hub for COD, eFootball, Dream League, FIFA, and all your favorite games. Find teammates, join tournaments, and climb the leaderboards!</p>
+    <div class="home-actions">
+        <a class="button" href="{{ url_for('main.game_list') }}">🎮 Browse Games</a>
+        <a class="button button-secondary" href="{{ url_for('auth_rooms.create_room') }}">⚡ Create Room</a>
+    </div>
+</section>
+
+<section class="home-section">
+    <div class="section-heading">
+        <div><h2>🔥 FEATURED GAMES</h2></div>
+        <a class="section-link" href="{{ url_for('main.game_list') }}">Browse all games <span aria-hidden="true">→</span></a>
+    </div>
+    {% if featured_games %}
+    <div class="home-game-grid">
+        {% for game in featured_games %}
+        <article class="card home-game-card">
+            {% if game.cover_image %}<img class="cover" src="{{ url_for('main.media_file', filename=game.cover_image) }}" alt="">{% endif %}
+            <span class="home-game-genre">{{ game.genre }}</span>
+            <h3 class="home-game-title"><a href="{{ url_for('main.game_detail', game_id=game.id) }}">{{ game.name }}</a></h3>
+            <p class="home-game-description">{{ game.description }}</p>
+            <div class="home-game-meta"><span class="muted">Explore details</span><a class="button home-small-button" href="{{ url_for('main.game_detail', game_id=game.id) }}">View</a></div>
+        </article>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="card home-empty"><h3>No featured games yet</h3><p class="muted">Check back soon for featured games.</p></div>
+    {% endif %}
+</section>
+
+<section class="home-section">
+    <div class="section-heading">
+        <div><h2>🎯 ACTIVE GAME ROOMS</h2></div>
+        <a class="section-link" href="{{ url_for('auth_rooms.room_list') }}">Find a room <span aria-hidden="true">→</span></a>
+    </div>
+    {% if active_rooms %}
+    <div class="home-room-list">
+        {% for room in active_rooms %}
+        <article class="card home-room-card">
+            <div class="home-room-heading">
+                <div>
+                    <h3><a href="{{ url_for('auth_rooms.room_detail', room_code=room.room_code) }}">{{ room.title }}</a></h3>
+                    <p class="home-room-game">{{ room.game }} · Hosted by {{ room.host_username }}</p>
+                </div>
+                <div class="home-room-meta">
+                    <span class="home-room-players">{{ room.current_players }}/{{ room.max_players }} players</span>
+                    <span class="home-room-code">Code {{ room.room_code }}</span>
+                </div>
+            </div>
+            {% if room.description %}<p class="home-room-description">{{ room.description }}</p>{% endif %}
+            <a class="button home-small-button" href="{{ url_for('auth_rooms.room_detail', room_code=room.room_code) }}">🎮 View Room</a>
+        </article>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="card home-empty">
+        <h3>No active rooms found</h3>
+        <p class="muted">Be the first to create a game room!</p>
+        <a class="button" href="{{ url_for('auth_rooms.create_room') }}">➕ Create Room</a>
+    </div>
+    {% endif %}
+</section>
+
+<section class="home-section">
+    <div class="section-heading">
+        <div><h2>📊 GAMING HUB STATS</h2></div>
+    </div>
+    <div class="home-stats-grid">
+        <article class="card home-stat"><strong>{{ featured_games|length }}</strong><span>Featured Games</span></article>
+        <article class="card home-stat"><strong>{{ active_rooms|length }}</strong><span>Active Rooms</span></article>
+        <article class="card home-stat"><strong>0</strong><span>Online Players</span></article>
+        <article class="card home-stat"><strong>0</strong><span>Matches Today</span></article>
+    </div>
+</section>
+{% endblock %}

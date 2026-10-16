@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}{{ game.name }} leaderboard · Gaming Hub{% endblock %}
+{% block content %}
+<section class="hero">
+    <h1>{{ game.icon }} {{ game.name }} leaderboard</h1>
+    <p>Verified submissions only · Showing up to 100 top entries</p>
+    <p><strong>{{ total_players }}</strong> verified entr{{ "y" if total_players == 1 else "ies" }} shown</p>
+</section>
+<div class="card" style="overflow-x:auto">
+    {% if entries %}
+    <table style="width:100%; border-collapse:collapse">
+        <thead><tr><th scope="col">Rank</th><th scope="col">Player</th>
+        {% for key, label in columns %}<th scope="col">{{ label }}</th>{% endfor %}
+        <th scope="col">Score</th></tr></thead>
+        <tbody>
+        {% for entry in entries %}
+        <tr>
+            <td>#{{ loop.index }}</td>
+            <td>{{ entry.username }}{% if current_user_id and current_user_id|int == entry.user_id %} (you){% endif %}</td>
+            {% for key, label in columns %}<td>{{ entry[key] if entry[key] is not none else 0 }}</td>{% endfor %}
+            <td><strong>{{ entry.total_score }}</strong></td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No verified submissions yet. Be the first to contribute stats for this game.</p>
+    {% endif %}
+</div>
+<p style="margin-top:1rem"><a class="button" href="{{ url_for('stats.submit_stats', game_slug=request.view_args.game_slug) }}">Submit stats</a>
+<a href="{{ url_for('stats.select_game') }}">Choose another game</a></p>
+{% endblock %}

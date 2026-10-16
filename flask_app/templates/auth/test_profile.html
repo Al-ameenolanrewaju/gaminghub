@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Favorite games · Gaming Hub{% endblock %}
+{% block content %}
+<section class="card">
+    <h1>Choose favorite games</h1>
+    {% for category, notice in get_flashed_messages(with_categories=true) %}<p role="status">{{ notice }}</p>{% endfor %}
+    <form method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        {% for game in games %}
+        <p><label><input type="checkbox" name="favorite_game_ids" value="{{ game.id }}" {% if game.name in selected_ids %}checked{% endif %}> {{ game.name }}</label></p>
+        {% endfor %}
+        <button class="button" type="submit">Save favorites</button>
+    </form>
+</section>
+{% endblock %}

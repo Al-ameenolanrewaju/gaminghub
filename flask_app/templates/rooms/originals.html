@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Hub Originals · Gaming Hub{% endblock %}
+{% block content %}
+<section class="hero">
+    <h1>Gaming Hub Originals</h1>
+    <p>Original browser games you can play together in a room. Create a room, invite a friend, and play right here.</p>
+    <a class="button" href="{{ url_for('auth_rooms.room_list') }}">Find a room</a>
+    <a class="button" href="{{ url_for('live_games.leaderboard') }}">Leaderboards</a>
+    {% if user.is_authenticated %}<a class="button" href="{{ url_for('auth_rooms.create_room') }}">Create a game room</a>{% endif %}
+</section>
+<div class="grid">
+    {% for slug, game in games.items() %}
+    <article class="card">
+        <h2>{{ game.title }}</h2>
+        <p>{{ game.description }}</p>
+        <p class="muted">{% if slug == "HUB_TACTIC_GRID" %}Connect Four · 2 players · 180 seconds{% else %}First to {{ game.goal }} points · {{ game.duration }} second round{% endif %} · Multiplayer</p>
+        <a href="{{ url_for('auth_rooms.room_list') }}">Join a room</a>
+        <p><a href="{{ url_for('live_games.leaderboard', game_slug=slug|replace('HUB_', '')|lower|replace('_', '-')) }}">View {{ game.title }} leaderboard</a></p>
+    </article>
+    {% endfor %}
+</div>
+{% endblock %}

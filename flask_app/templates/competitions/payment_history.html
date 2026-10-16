@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Payment history | Gaming Hub{% endblock %}
+{% block content %}
+<h1>Payment history</h1>
+{% for category, message in get_flashed_messages(with_categories=true) %}
+  <p role="status">{{ message }}</p>
+{% endfor %}
+{% if subscriptions %}
+<div class="card">
+  <table>
+    <thead><tr><th>Tournament</th><th>Amount</th><th>Method</th><th>Status</th><th>Submitted</th></tr></thead>
+    <tbody>{% for item in subscriptions %}
+      <tr>
+        <td><a href="{{ url_for('competitions.payment_status', subscription_id=item.id) }}">{{ item.tournament_title }}</a></td>
+        <td>{{ item.currency }} {{ item.payment_amount }}</td>
+        <td>{{ item.payment_method|replace("_", " ")|title }}</td>
+        <td>{{ item.payment_status|title }}</td>
+        <td>{{ item.subscription_date }}</td>
+      </tr>
+    {% endfor %}</tbody>
+  </table>
+</div>
+{% else %}<p class="card">No payment submissions yet.</p>{% endif %}
+<p><a href="{{ url_for('competitions.tournament_list') }}">Browse tournaments</a></p>
+{% endblock %}

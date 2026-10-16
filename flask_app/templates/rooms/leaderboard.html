@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}{{ games[selected_game].title if selected_game else "Originals" }} Leaderboard · Gaming Hub{% endblock %}
+{% block content %}
+<section class="hero">
+    <h1>{{ games[selected_game].title if selected_game else "Hub Originals" }} Leaderboard</h1>
+    <p>Standings are calculated from completed matches across game rooms.</p>
+    <p><a href="{{ url_for('live_games.originals') }}">← Hub Originals</a></p>
+</section>
+<section class="card">
+    <h2>Game</h2>
+    <p><a href="{{ url_for('live_games.leaderboard') }}">All games</a></p>
+    {% for slug, game in games.items() %}
+    <p><a href="{{ url_for('live_games.leaderboard', game_slug=slug|replace('HUB_', '')|lower|replace('_', '-')) }}">{{ game.title }}</a></p>
+    {% endfor %}
+</section>
+<section class="card">
+    <h2>Rankings</h2>
+    {% if players %}
+    <div class="table-wrap">
+        <table>
+            <thead><tr><th>Rank</th><th>Player</th><th>Wins</th><th>Matches</th><th>Win rate</th><th>Points</th></tr></thead>
+            <tbody>
+            {% for player in players %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ player.username }}</td>
+                <td>{{ player.wins }}</td>
+                <td>{{ player.matches }}</td>
+                <td>{{ "%.1f"|format(player.wins * 100 / player.matches) }}%</td>
+                <td>{{ player.points }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p>No completed matches yet. Finish a game to appear on the leaderboard.</p>
+    {% endif %}
+</section>
+{% endblock %}

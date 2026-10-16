@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Log in · Gaming Hub{% endblock %}
+{% block content %}
+<section class="card auth-card">
+    <h1>Log in</h1>
+    {% for message in get_flashed_messages() %}<p role="status">{{ message }}</p>{% endfor %}
+    {% for error in errors %}<p role="alert">{{ error }}</p>{% endfor %}
+    <form method="post" action="{{ url_for('auth_rooms.login') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <p><label>Username <input name="username" required autocomplete="username" value="{{ username }}"></label></p>
+        <p><label>Password <input type="password" name="password" required autocomplete="current-password"></label></p>
+        <button class="button" type="submit">Log in</button>
+    </form>
+    <p><a href="{{ url_for('auth_rooms.password_reset') }}">Forgot your password?</a></p>
+    <p>Need an account? <a href="{{ url_for('auth_rooms.register') }}">Register</a>.</p>
+</section>
+{% endblock %}

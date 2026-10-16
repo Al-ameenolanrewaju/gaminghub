@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Submit {{ game.name }} stats · Gaming Hub{% endblock %}
+{% block content %}
+<section class="hero">
+    <h1>{{ game.icon }} Submit {{ game.name }} stats</h1>
+    <p>Submissions are saved as pending until reviewed. Only verified submissions appear on leaderboards.</p>
+</section>
+
+{% if errors %}
+<section class="card" role="alert" aria-labelledby="error-heading">
+    <h2 id="error-heading">Please correct these values</h2>
+    <ul>{% for error in errors %}<li>{{ error }}</li>{% endfor %}</ul>
+</section>
+{% endif %}
+
+<form class="card" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="grid">
+        {% for field, label in game.fields %}
+        <label>
+            {{ label }}
+            <input type="number" name="{{ field }}" min="{{ 1 if field in ('matches_played', 'town_hall_level') else 0 }}" max="2147483647" step="1" required value="{{ values.get(field, '') }}">
+        </label>
+        {% endfor %}
+    </div>
+    <p><label for="description">Notes (optional)</label><br>
+        <textarea id="description" name="description" maxlength="5000" rows="4" style="width:100%">{{ description }}</textarea>
+    </p>
+    <p><label for="screenshot">Proof image (optional, PNG/JPEG/GIF/WebP up to 10 MB)</label><br>
+        <input id="screenshot" type="file" name="screenshot" accept=".png,.jpg,.jpeg,.gif,.webp,image/png,image/jpeg,image/gif,image/webp">
+    </p>
+    <button class="button" type="submit">Submit stats</button>
+</form>
+<p style="margin-top:1rem">
+    <a href="{{ url_for('stats.leaderboard', game_slug=request.view_args.game_slug) }}">View {{ game.name }} leaderboard</a>
+    · <a href="{{ url_for('stats.select_game') }}">Choose another game</a>
+</p>
+{% endblock %}

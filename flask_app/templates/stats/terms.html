@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Terms · Gaming Hub{% endblock %}
+{% block content %}
+<section class="hero"><h1>Terms of use</h1><p>Guidelines for using Gaming Hub.</p></section>
+<article class="card">
+    <h2>Use of the service</h2>
+    <p>Use Gaming Hub lawfully and respectfully. Do not submit misleading stats, impersonate another player, interfere with the service, or use it to harass others.</p>
+    <h2>Submissions and review</h2>
+    <p>You are responsible for the accuracy of stats you submit. Submissions may remain pending until reviewed; only verified submissions are shown on the stats leaderboards. Submitting stats does not guarantee verification or ranking.</p>
+    <h2>Availability and changes</h2>
+    <p>Features may change or be unavailable, and the service is provided as available. These terms may be updated as the service develops.</p>
+    <h2>Contact</h2>
+    <p>Questions about these terms can be directed to <a href="{{ url_for('stats.contact') }}">the contact page</a>.</p>
+</article>
+{% endblock %}

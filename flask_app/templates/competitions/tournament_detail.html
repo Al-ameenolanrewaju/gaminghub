@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}{{ tournament.title }} | Tournaments{% endblock %}
+{% block content %}
+<p><a href="{{ url_for('competitions.tournament_list') }}">← All tournaments</a></p>
+{% for category, message in get_flashed_messages(with_categories=true) %}
+  <p role="status">{{ message }}</p>
+{% endfor %}
+<article class="hero">
+  <h1>{{ tournament.title }}</h1>
+  <p>{{ tournament.description }}</p>
+  <p>{{ tournament.game_name or "Gaming" }} · {{ tournament.status|title }} · {{ tournament.format|replace("_", " ")|title }}</p>
+</article>
+<section class="card">
+  <h2>Details</h2>
+  <p>Starts: {{ tournament.start_date }} · Registration deadline: {{ tournament.registration_deadline }}</p>
+  <p>Entry fee: {{ tournament.currency }} {{ tournament.entry_fee }} · Prize pool: {{ tournament.currency }} {{ tournament.game_prize }}</p>
+  <p>Participants: {{ tournament.current_participants }}/{{ tournament.max_participants }}</p>
+  {% if tournament.requirements %}<p>Requirements: {{ tournament.requirements }}</p>{% endif %}
+  {% if tournament.rules %}<h3>Rules</h3><p>{{ tournament.rules }}</p>{% endif %}
+  {% if tournament.stream_url %}<p><a href="{{ tournament.stream_url }}">Tournament stream</a></p>{% endif %}
+  {% if is_subscribed %}
+    <p>Your registration payment status: {{ user_subscription.payment_status|title }}.
+      <a href="{{ url_for('competitions.payment_status', subscription_id=user_subscription.id) }}">View status</a>
+    </p>
+  {% elif registration_open and user.is_authenticated %}
+    <a class="button" href="{{ url_for('competitions.subscribe_tournament', tournament_id=tournament.id) }}">Register</a>
+  {% elif registration_open %}
+    <p><a href="/login/">Log in</a> to register.</p>
+  {% else %}
+    <p class="muted">Registration is closed or full.</p>
+  {% endif %}
+  <p><a href="{{ url_for('competitions.match_results', tournament_id=tournament.id) }}">Match results</a>
+    · <a href="{{ url_for('competitions.tournament_results', tournament_id=tournament.id) }}">Tournament results</a></p>
+</section>
+<section class="card">
+  <h2>Prize distribution</h2>
+  <ul>{% for reward in rewards %}<li>{{ reward.reward_description }} — {{ tournament.currency }} {{ reward.reward_amount }}</li>{% endfor %}</ul>
+</section>
+{% endblock %}

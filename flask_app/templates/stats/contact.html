@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Contact · Gaming Hub{% endblock %}
+{% block content %}
+<section class="hero">
+    <h1>Contact Gaming Hub</h1>
+    <p>For help, questions, or feedback, send a message to the team.</p>
+</section>
+{% if errors %}
+<section class="card" role="alert"><h2>Please check your message</h2><ul>{% for error in errors %}<li>{{ error }}</li>{% endfor %}</ul></section>
+{% endif %}
+{% if delivery_error %}
+<section class="card" role="alert"><p>{{ delivery_error }}</p></section>
+{% elif delivered %}
+<section class="card" role="status">
+    <h2>Your message has been sent</h2>
+    <p>Thanks for contacting Gaming Hub Support. We’ll respond as soon as possible.</p>
+</section>
+{% endif %}
+<form class="card" method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <p><label for="name">Name</label><br><input id="name" name="name" maxlength="100" required value="{{ values.name }}"></p>
+    <p><label for="email">Email</label><br><input id="email" type="email" name="email" required value="{{ values.email }}"></p>
+    <p><label for="subject">Topic</label><br>
+        <select id="subject" name="subject" required>
+            <option value="">Choose a topic</option>
+            {% for key, label in [("support", "Technical support"), ("account", "Account issues"), ("feedback", "Feedback and suggestions"), ("partnership", "Partnership inquiry"), ("other", "Other")] %}
+            <option value="{{ key }}" {% if values.subject == key %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+    </p>
+    <p><label for="message">Message</label><br><textarea id="message" name="message" rows="6" maxlength="5000" required style="width:100%">{{ values.message }}</textarea></p>
+    <button class="button" type="submit">Send message</button>
+</form>
+{% endblock %}

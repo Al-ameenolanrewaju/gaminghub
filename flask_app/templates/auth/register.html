@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Create account · Gaming Hub{% endblock %}
+{% block content %}
+<section class="card auth-card">
+    <h1>Create your account</h1>
+    {% for message in get_flashed_messages() %}<p role="status">{{ message }}</p>{% endfor %}
+    {% for error in errors %}<p role="alert">{{ error }}</p>{% endfor %}
+    <form method="post" action="{{ url_for('auth_rooms.register') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <p><label>Username <input name="username" required maxlength="150" autocomplete="username" value="{{ values.username }}"></label></p>
+        <p><label>Email <input type="email" name="email" required maxlength="254" autocomplete="email" value="{{ values.email }}"></label></p>
+        <p><label>Password <input type="password" name="password" required minlength="8" autocomplete="new-password"></label></p>
+        <p><label>Confirm password <input type="password" name="password_confirm" required minlength="8" autocomplete="new-password"></label></p>
+        <button class="button" type="submit">Create account</button>
+    </form>
+    <p>Already registered? <a href="{{ url_for('auth_rooms.login') }}">Log in</a>.</p>
+</section>
+{% endblock %}

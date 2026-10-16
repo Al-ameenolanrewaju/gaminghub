@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Multiplayer rooms · Gaming Hub{% endblock %}
+{% block content %}
+<h1>Multiplayer rooms</h1>
+{% for message in get_flashed_messages() %}<p role="status">{{ message }}</p>{% endfor %}
+{% if user and user.is_authenticated %}
+    <p><a class="button" href="{{ url_for('auth_rooms.create_room') }}">Create a room</a></p>
+{% else %}
+    <p><a href="{{ url_for('auth_rooms.login') }}">Log in</a> to create or join a room.</p>
+{% endif %}
+{% if rooms %}
+<div class="grid">
+    {% for room in rooms %}
+    <article class="card">
+        <h2><a href="{{ url_for('auth_rooms.room_detail', room_code=room.room_code) }}">{{ room.title }}</a></h2>
+        <p>{% if room.game.startswith("HUB_") %}{{ room.game|replace("HUB_", "")|replace("_", " ")|title }}{% else %}{{ room.game }}{% endif %} · Hosted by {{ room.host_username }}</p>
+        <p>{{ room.current_players }} / {{ room.max_players }} players · Code {{ room.room_code }}</p>
+        {% if room.description %}<p>{{ room.description }}</p>{% endif %}
+        {% if user and user.is_authenticated and room.host_username != user.username and not room.joined %}
+        <form method="post" action="{{ url_for('auth_rooms.join_room', room_code=room.room_code) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <label>Room password (if required) <input type="password" name="game_password" maxlength="10"></label>
+            <button type="submit">Join room</button>
+        </form>
+        {% endif %}
+    </article>
+    {% endfor %}
+</div>
+{% else %}
+<p>No active rooms yet. Create the first one!</p>
+{% endif %}
+{% if user and user.is_authenticated %}
+<form method="post" action="{{ url_for('auth_rooms.logout') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button type="submit">Log out</button>
+</form>
+{% endif %}
+{% endblock %}

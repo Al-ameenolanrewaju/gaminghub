@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}{{ profile_user.username }} · Gaming Hub{% endblock %}
+{% block content %}
+<section class="card">
+    {% for message in get_flashed_messages() %}<p role="status">{{ message }}</p>{% endfor %}
+    <h1>{{ profile_user.username }}'s profile</h1>
+    {% if profile_data %}
+        <p>{{ profile_data.bio or "This player hasn't added a bio yet." }}</p>
+        <dl>
+            <dt>Gamer tag</dt><dd>{{ profile_data.gamer_tag or "Not set" }}</dd>
+            <dt>Main game</dt><dd>{{ profile_data.main_game or "Not set" }}</dd>
+            <dt>Country</dt><dd>{{ profile_data.country or "Not set" }}</dd>
+            <dt>Platform</dt><dd>{{ profile_data.platform or "Not set" }}</dd>
+            <dt>Play style</dt><dd>{{ profile_data.play_style or "Not set" }}</dd>
+            <dt>Preferred mode</dt><dd>{{ profile_data.preferred_mode }}</dd>
+            <dt>Level</dt><dd>{{ profile_data.level }}</dd>
+            <dt>Matches</dt><dd>{{ profile_data.total_matches }}</dd>
+            <dt>Win rate</dt><dd>{{ profile_data.win_rate }}%</dd>
+        </dl>
+    {% else %}
+        <p>This player hasn't created a profile yet.</p>
+    {% endif %}
+    {% if own_profile %}<p><a class="button" href="{{ url_for('auth_rooms.edit_profile') }}">Edit profile</a></p>{% endif %}
+    <p><a href="{{ url_for('auth_rooms.room_list') }}">Browse rooms</a></p>
+    {% if user and user.is_authenticated %}
+    <form method="post" action="{{ url_for('auth_rooms.logout') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit">Log out</button>
+    </form>
+    {% endif %}
+</section>
+{% endblock %}

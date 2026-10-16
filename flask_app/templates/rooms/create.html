@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Create room · Gaming Hub{% endblock %}
+{% block content %}
+<section class="card">
+    <h1>Create a multiplayer room</h1>
+    {% for message in get_flashed_messages() %}<p role="status">{{ message }}</p>{% endfor %}
+    {% for error in errors %}<p role="alert">{{ error }}</p>{% endfor %}
+    <form method="post" action="{{ url_for('auth_rooms.create_room') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <p><label>Room title <input name="title" required maxlength="100" value="{{ values.title }}"></label></p>
+        <p><label>Game
+            <select name="game" required>
+                <option value="">Choose a game</option>
+                <optgroup label="Gaming Hub Originals">
+                    {% for game in games if game.startswith("HUB_") %}
+                    {% set label = game|replace("HUB_", "")|replace("_", " ")|title %}
+                    <option value="{{ game }}" {% if values.game == game %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </optgroup>
+                <optgroup label="External games">
+                {% for game in games if not game.startswith("HUB_") %}<option value="{{ game }}" {% if values.game == game %}selected{% endif %}>{{ game }}</option>{% endfor %}
+                </optgroup>
+            </select>
+        </label></p>
+        <p><label>Description <textarea name="description" maxlength="500">{{ values.description }}</textarea></label></p>
+        <p><label>Maximum players
+            <select name="max_players">
+                {% for size in sizes %}<option value="{{ size }}" {% if values.max_players|string == size|string or values.game == "HUB_TACTIC_GRID" and size == 2 or not values.game and size == 4 %}selected{% endif %} {% if size != 2 %}data-general-size="true"{% endif %}>{{ size }}</option>{% endfor %}
+            </select>
+        </label></p>
+        <p><label>Optional room password <input type="password" name="game_password" maxlength="10" minlength="4"></label></p>
+        <button class="button" type="submit">Create room</button>
+    </form>
+    <script>
+    (() => {
+        const gameSelect = document.querySelector('select[name="game"]');
+        const sizeSelect = document.querySelector('select[name="max_players"]');
+        const generalOptions = [...sizeSelect.options].filter(option => option.dataset.generalSize);
+        function updateRoomSizeOptions() {
+            const tacticGrid = gameSelect.value === "HUB_TACTIC_GRID";
+            generalOptions.forEach(option => { option.hidden = tacticGrid; });
+            if (tacticGrid) sizeSelect.value = "2";
+        }
+        gameSelect.addEventListener("change", updateRoomSizeOptions);
+        updateRoomSizeOptions();
+    })();
+    </script>
+    {% if user and user.is_authenticated %}
+    <form method="post" action="{{ url_for('auth_rooms.logout') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit">Log out</button>
+    </form>
+    {% endif %}
+</section>
+{% endblock %}

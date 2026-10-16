@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}{{ tournament.title }} results | Gaming Hub{% endblock %}
+{% block content %}
+<p><a href="{{ url_for('competitions.tournament_detail', tournament_id=tournament.id) }}">← {{ tournament.title }}</a></p>
+<h1>Tournament results</h1>
+{% if not_completed %}
+  <p class="card">Final results are not available because this tournament is not completed.</p>
+{% else %}
+  {% if result %}
+  <section class="card">
+    <h2>Podium</h2>
+    <ol>
+      {% if result.first_username %}<li>First: {{ result.first_username }}</li>{% endif %}
+      {% if result.second_username %}<li>Second: {{ result.second_username }}</li>{% endif %}
+      {% if result.third_username %}<li>Third: {{ result.third_username }}</li>{% endif %}
+    </ol>
+    {% if result.notes %}<p>{{ result.notes }}</p>{% endif %}
+    {% if standings %}<h3>Final standings</h3><pre>{{ standings|tojson(indent=2) }}</pre>{% endif %}
+  </section>
+  {% else %}<p class="card">The tournament is complete; final standings have not been published.</p>{% endif %}
+  <section class="card">
+    <h2>Completed matches</h2>
+    {% if completed_matches %}
+    <ul>{% for match in completed_matches %}
+      <li>Round {{ match.round_number }}, match {{ match.match_number }}:
+        {{ match.player1_username or "TBD" }} {{ match.score_player1 }}–{{ match.score_player2 }}
+        {{ match.player2_username or "TBD" }}{% if match.winner_username %} · Winner: {{ match.winner_username }}{% endif %}
+      </li>
+    {% endfor %}</ul>
+    {% else %}<p>No completed matches are available.</p>{% endif %}
+  </section>
+{% endif %}
+<section class="card"><h2>Prize distribution</h2><ul>{% for reward in rewards %}
+  <li>{{ reward.reward_description }} — {{ tournament.currency }} {{ reward.reward_amount }}</li>
+{% endfor %}</ul></section>
+{% endblock %}

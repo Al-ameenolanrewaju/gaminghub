@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Tournaments | Gaming Hub{% endblock %}
+{% block content %}
+<h1>Tournaments</h1>
+{% for category, message in get_flashed_messages(with_categories=true) %}
+  <p role="status">{{ message }}</p>
+{% endfor %}
+{% if tournaments %}
+<div class="grid">
+  {% for tournament in tournaments %}
+  <article class="card">
+    <h2><a href="{{ url_for('competitions.tournament_detail', tournament_id=tournament.id) }}">{{ tournament.title }}</a></h2>
+    <p>{{ tournament.description }}</p>
+    <p class="muted">{{ tournament.game_name or "Gaming" }} · {{ tournament.status|title }} · {{ tournament.start_date }}</p>
+    <p>Entry: {{ tournament.currency }} {{ tournament.entry_fee }} · Prize: {{ tournament.currency }} {{ tournament.game_prize }}</p>
+    <p>{{ tournament.current_participants }}/{{ tournament.max_participants }} participants</p>
+    <a class="button" href="{{ url_for('competitions.tournament_detail', tournament_id=tournament.id) }}">View tournament</a>
+  </article>
+  {% endfor %}
+</div>
+{% else %}
+<p class="card">There are no tournaments to display.</p>
+{% endif %}
+<p><a href="{{ url_for('competitions.user_tournaments') }}">My tournaments</a> · <a href="{{ url_for('competitions.user_payment_history') }}">Payment history</a></p>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Clash Royale leaderboard | Gaming Hub{% endblock %}
+{% block content %}
+<h1>Clash Royale leaderboard</h1>
+{% for category, message in get_flashed_messages(with_categories=true) %}
+  <p role="status">{{ message }}</p>
+{% endfor %}
+<p>{{ total_players }} tracked players · {% if use_mock_data %}Demo data mode{% else %}API integration available{% endif %}</p>
+{% if user_rank %}<p>Your rank: #{{ user_rank }}</p>{% endif %}
+<p><a href="{{ url_for('competitions.about_clash_royale') }}">About</a>
+  {% if user.is_authenticated and not has_player %} · <a href="{{ url_for('competitions.connect_account') }}">Connect account</a>{% endif %}</p>
+<div class="card">
+  {% if players %}
+  <table>
+    <thead><tr><th>Rank</th><th>Player</th><th>Trophies</th><th>Win rate</th><th>Clan</th><th>Data</th></tr></thead>
+    <tbody>{% for player in players %}
+      <tr>
+        <td>{{ loop.index }}</td><td>{{ player.player_name }} <span class="muted">({{ player.username }})</span></td>
+        <td>{{ player.trophies }}</td><td>{{ "%.1f"|format(player.win_rate) }}%</td>
+        <td>{{ player.clan_name or "—" }}</td><td>{{ "Demo" if player.is_mock else "Live" }}</td>
+      </tr>
+    {% endfor %}</tbody>
+  </table>
+  {% else %}<p>No players are connected yet.</p>{% endif %}
+</div>
+{% if user.is_authenticated and has_player %}
+  <div class="card">
+    <form method="post" action="{{ url_for('competitions.refresh_stats') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button class="button" type="submit">Refresh stats</button>
+    </form>
+    <form method="post" action="{{ url_for('competitions.toggle_data_source') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button class="button" type="submit">Toggle demo/live data source</button>
+    </form>
+  </div>
+{% endif %}
+{% endblock %}

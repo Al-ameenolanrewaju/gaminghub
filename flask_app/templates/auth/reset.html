@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Password reset · Gaming Hub{% endblock %}
+{% block content %}
+<section class="card auth-card">
+    <h1>Password reset</h1>
+    {% for category, notice in get_flashed_messages(with_categories=true) %}<p role="{{ 'alert' if category == 'error' else 'status' }}">{{ notice }}</p>{% endfor %}
+    <p>Enter your email address and, if an active account matches, a one-hour reset link will be sent.</p>
+    <form method="post" action="{{ url_for('auth_rooms.password_reset') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <p><label>Email <input type="email" name="email" required maxlength="254" autocomplete="email"></label></p>
+        <button class="button" type="submit">Request reset</button>
+    </form>
+    <p><a href="{{ url_for('auth_rooms.login') }}">Return to login</a></p>
+</section>
+{% endblock %}

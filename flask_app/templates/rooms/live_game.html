@@ -1,0 +1,257 @@
+{% extends "base.html" %}
+{% block title %}{{ room.game|replace("HUB_", "")|replace("_", " ")|title }} · Gaming Hub{% endblock %}
+{% block content %}
+<style>
+    #column-controls { display: grid; grid-template-columns: repeat(7, minmax(2.5rem, 1fr)); gap: .35rem; margin-bottom: .5rem; }
+    #column-controls button { min-height: 2.8rem; padding: .25rem; }
+    #connect-board > div { display: grid; grid-template-columns: repeat(7, minmax(2.5rem, 1fr)); gap: .35rem; margin-bottom: .35rem; }
+    #connect-board span { display: grid; place-items: center; aspect-ratio: 1; border-radius: 50%; background: #334155; font-size: 1.4rem; font-weight: 800; }
+    @media (max-width: 480px) { #column-controls, #connect-board > div { gap: .15rem; } #column-controls button { font-size: .7rem; } }
+</style>
+<section class="hero">
+    <p><a href="{{ url_for('auth_rooms.room_detail', room_code=room.room_code) }}">← Back to {{ room.title }}</a></p>
+    <h1 id="game-title">{{ state.game.title }}</h1>
+    <p>Room {{ room.room_code }} · {{ room.title }}</p>
+    <p id="game-message" role="status" aria-live="polite">
+        {% if state.status == "waiting" %}Waiting for the host to start. All players in the room can join.{% endif %}
+        {% if state.status == "finished" %}The last round has ended. The host can start another.{% endif %}
+    </p>
+    {% if is_host and state.status != "playing" %}
+    <form method="post" action="{{ url_for('live_games.start_room_game', room_code=room.room_code) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf }}">
+        <button class="button" type="submit">Start / restart game</button>
+    </form>
+    {% elif state.status == "waiting" %}
+    <p>The host will start the game when everyone is ready.</p>
+    {% endif %}
+</section>
+
+<section class="card">
+    <h2>Players</h2>
+    <ol id="scoreboard">
+        {% for player in state.players %}
+        <li data-player-id="{{ player.id if player.id is defined else player.user_id }}">
+            {{ player.username }}{% if player.id is defined and player.id == session.get("user_id") or player.user_id is defined and player.user_id == session.get("user_id") %} (you){% endif %}
+            <span class="score">{{ player.score }}</span>
+        </li>
+        {% endfor %}
+    </ol>
+</section>
+
+<section id="neon-game" class="card" hidden>
+    <h2>Neon Sprint</h2>
+    <p>Tap the boost button to race to the finish. First runner to the goal wins.</p>
+    <div id="race-tracks"></div>
+    <button id="boost-button" class="button" type="button">Boost!</button>
+</section>
+
+<section id="cipher-game" class="card" hidden>
+    <h2>Cipher Clash</h2>
+    <p>Crack the hidden four-digit code. Digits do not repeat. You have ten guesses.</p>
+    <form id="cipher-form">
+        <label for="cipher-guess">Your four-digit guess</label>
+        <input id="cipher-guess" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="off">
+        <button class="button" type="submit">Submit guess</button>
+    </form>
+    <p id="cipher-feedback" aria-live="polite"></p>
+    <ol id="cipher-attempts"></ol>
+</section>
+
+<section id="tactic-game" class="card" hidden>
+    <h2>Tactic Grid</h2>
+    <p>Connect four before your opponent. Choose a column; pieces fall to the lowest open row.</p>
+    <p id="turn-indicator" aria-live="polite"></p>
+    <div id="column-controls"></div>
+    <div id="connect-board" role="grid" aria-label="Connect Four board"></div>
+    <p id="tactic-result" aria-live="polite"></p>
+</section>
+
+<section id="reaction-game" class="card" hidden>
+    <h2>Reaction Relay</h2>
+    <p>Wait for green. A false start costs a point. First to five wins.</p>
+    <p id="reaction-indicator" aria-live="polite">Wait for the signal…</p>
+    <button id="reaction-button" class="button" type="button" disabled>Wait…</button>
+</section>
+<p>Time left: <strong id="time-left">--</strong> seconds</p>
+
+<script>
+(() => {
+    const stateUrl = {{ url_for("live_games.game_state", room_code=room.room_code)|tojson }};
+    const actionUrl = {{ url_for("live_games.game_action", room_code=room.room_code)|tojson }};
+    const csrfToken = {{ csrf|tojson }};
+    const gameType = {{ room.game|tojson }};
+    const currentUserId = {{ session.get("user_id")|tojson }};
+    const message = document.getElementById("game-message");
+    const scoreboard = document.getElementById("scoreboard");
+    const timeLeft = document.getElementById("time-left");
+    const neon = document.getElementById("neon-game");
+    const cipher = document.getElementById("cipher-game");
+    const tactic = document.getElementById("tactic-game");
+    const reaction = document.getElementById("reaction-game");
+    const boost = document.getElementById("boost-button");
+    const cipherForm = document.getElementById("cipher-form");
+    const reactionButton = document.getElementById("reaction-button");
+    let currentState = {{ state|tojson }};
+    let sending = false;
+
+    function paint(state) {
+        currentState = state;
+        const playing = state.status === "playing";
+        neon.hidden = !playing || gameType !== "HUB_NEON_SPRINT";
+        cipher.hidden = gameType !== "HUB_CIPHER_CLASH" || !state.challenge;
+        tactic.hidden = gameType !== "HUB_TACTIC_GRID" || !state.challenge;
+        reaction.hidden = gameType !== "HUB_REACTION_RELAY" || !state.challenge;
+        timeLeft.textContent = playing ? state.time_left : "--";
+        if (state.status === "finished") {
+            const winner = state.players && state.players[0];
+            message.textContent = winner ? `${winner.username} wins! The host can start another round.` : "Round finished. The host can start another.";
+        } else if (playing) {
+            message.textContent = "Game in progress — play now!";
+        }
+        if (state.players) {
+            scoreboard.replaceChildren();
+            state.players.forEach((player, index) => {
+                const item = document.createElement("li");
+                item.dataset.playerId = player.user_id ?? player.id;
+                const name = document.createTextNode(
+                    `${index + 1}. ${player.username}${Number(player.user_id ?? player.id) === currentUserId ? " (you)" : ""} — ${player.score} points`
+                );
+                item.appendChild(name);
+                scoreboard.appendChild(item);
+            });
+        }
+        if (gameType === "HUB_NEON_SPRINT" && state.players) {
+            const tracks = document.getElementById("race-tracks");
+            tracks.replaceChildren();
+            state.players.forEach(player => {
+                const row = document.createElement("p");
+                const progress = Math.min(100, player.score / state.game.goal * 100);
+                row.textContent = `${player.username}: ${"■".repeat(Math.ceil(progress / 10))}${"·".repeat(10 - Math.ceil(progress / 10))}`;
+                tracks.appendChild(row);
+            });
+        }
+        if (gameType === "HUB_CIPHER_CLASH" && state.challenge) {
+            const attempts = state.challenge.attempts || [];
+            const feedback = document.getElementById("cipher-feedback");
+            feedback.textContent = attempts.length
+                ? `${attempts[attempts.length - 1].exact} exact, ${attempts[attempts.length - 1].misplaced} correct but misplaced.`
+                : "No guesses yet.";
+            if (state.challenge.answer) feedback.textContent += ` The code was ${state.challenge.answer}.`;
+            const attemptList = document.getElementById("cipher-attempts");
+            attemptList.replaceChildren();
+            attempts.forEach(item => {
+                const line = document.createElement("li");
+                line.textContent = `${item.guess}: ${item.exact} exact, ${item.misplaced} misplaced`;
+                attemptList.appendChild(line);
+            });
+            const exhausted = attempts.length >= state.challenge.max_attempts;
+            document.getElementById("cipher-guess").disabled = !playing || sending || exhausted;
+            cipherForm.querySelector("button").disabled = !playing || sending || exhausted;
+        }
+        if (gameType === "HUB_TACTIC_GRID" && state.challenge) {
+            const {board, your_turn: yourTurn, your_marker: marker, winner} = state.challenge;
+            document.getElementById("turn-indicator").textContent =
+                playing ? (yourTurn ? `Your turn (${marker})` : "Opponent's turn") : "";
+            const controls = document.getElementById("column-controls");
+            controls.replaceChildren();
+            for (let column = 0; column < 7; column += 1) {
+                const button = document.createElement("button");
+                button.type = "button";
+                button.textContent = `Drop in column ${column + 1}`;
+                button.disabled = !playing || !yourTurn || sending || board[0][column] !== null;
+                button.addEventListener("click", () => act({column}));
+                controls.appendChild(button);
+            }
+            const grid = document.getElementById("connect-board");
+            grid.replaceChildren();
+            board.forEach((row, rowIndex) => {
+                const rowElement = document.createElement("div");
+                rowElement.setAttribute("role", "row");
+                row.forEach((cell, columnIndex) => {
+                    const cellElement = document.createElement("span");
+                    cellElement.setAttribute("role", "gridcell");
+                    cellElement.textContent = cell || "·";
+                    cellElement.setAttribute("aria-label", `Row ${rowIndex + 1}, column ${columnIndex + 1}: ${cell || "empty"}`);
+                    rowElement.appendChild(cellElement);
+                });
+                grid.appendChild(rowElement);
+            });
+            document.getElementById("tactic-result").textContent =
+                winner ? `${state.players.find(player => player.user_id === winner)?.username || "A player"} connected four!` : state.status === "finished" ? "Draw!" : "";
+        }
+        if (gameType === "HUB_REACTION_RELAY" && state.challenge) {
+            const active = playing && state.challenge.signal;
+            reactionButton.disabled = !active || sending;
+            reactionButton.textContent = active ? "NOW — TAP!" : "Wait for green…";
+            reactionButton.style.backgroundColor = active ? "#16a34a" : "#991b1b";
+            document.getElementById("reaction-indicator").textContent =
+                state.challenge.false_start
+                    ? "False start! You lost a point — wait for the next signal."
+                    : state.challenge.last_winner
+                        ? `${state.challenge.last_winner} won that signal. Get ready…`
+                        : "Wait for green…";
+        }
+        boost.disabled = !playing || sending;
+    }
+
+    async function refresh() {
+        try {
+            const response = await fetch(stateUrl, {credentials: "same-origin"});
+            if (response.ok) paint(await response.json());
+            else if (response.status === 401 || response.status === 403) message.textContent = "You are no longer in this room. Return to the room page.";
+        } catch (error) {
+            message.textContent = "Connection interrupted. Reconnecting…";
+        }
+    }
+
+    async function act(values) {
+        if (sending || currentState.status !== "playing") return;
+        sending = true;
+        paint(currentState);
+        const body = new URLSearchParams({...values, csrf_token: csrfToken});
+        try {
+            const response = await fetch(actionUrl, {
+                method: "POST",
+                credentials: "same-origin",
+                headers: {"Content-Type": "application/x-www-form-urlencoded"},
+                body
+            });
+            if (response.ok) {
+                const result = await response.json();
+                if (result.solved) message.textContent = "Code cracked! You win!";
+                else if (result.false_start) message.textContent = "False start! You lost a point.";
+                else if (result.accepted === false) message.textContent = "That guess could not be accepted.";
+                else if (result.exact !== undefined) message.textContent =
+                    `${result.exact} exact, ${result.misplaced} correct but misplaced.`;
+                await refresh();
+            } else {
+                const result = await response.json();
+                message.textContent = result.description || "That move could not be accepted.";
+                await refresh();
+            }
+        } catch (error) {
+            message.textContent = "Could not send that move. Reconnecting…";
+        } finally {
+            sending = false;
+            paint(currentState);
+        }
+    }
+
+    boost.addEventListener("click", () => act({action: "boost"}));
+    cipherForm.addEventListener("submit", event => {
+        event.preventDefault();
+        const input = document.getElementById("cipher-guess");
+        if (/^[0-9]{4}$/.test(input.value) && new Set(input.value).size === 4) {
+            act({guess: input.value});
+            input.value = "";
+        } else {
+            document.getElementById("cipher-feedback").textContent =
+                "Enter four different digits.";
+        }
+    });
+    reactionButton.addEventListener("click", () => act({action: "react"}));
+    paint(currentState);
+    window.setInterval(refresh, gameType === "HUB_REACTION_RELAY" ? 100 : 1000);
+})();
+</script>
+{% endblock %}

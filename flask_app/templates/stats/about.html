@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}About · Gaming Hub{% endblock %}
+{% block content %}
+<section class="hero">
+    <h1>About Gaming Hub</h1>
+    <p>A place for players to connect around the games they enjoy.</p>
+</section>
+<article class="card">
+    <h2>Play, compete, and connect</h2>
+    <p>Gaming Hub brings game information and community features together. This Flask port provides the game stats submission and verified leaderboard pages, alongside the existing game directory.</p>
+    <p>Stats submitted here are stored for review. They are not published to public leaderboards until marked verified.</p>
+    <p><a href="{{ url_for('stats.select_game') }}">Explore stats and leaderboards</a> · <a href="{{ url_for('stats.contact') }}">Contact us</a></p>
+</article>
+{% endblock %}

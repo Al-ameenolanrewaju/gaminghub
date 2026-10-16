@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}{{ room.title }} · Gaming Hub{% endblock %}
+{% block content %}
+<section class="card">
+    {% for message in get_flashed_messages() %}<p role="status">{{ message }}</p>{% endfor %}
+    <h1>{{ room.title }}</h1>
+    <p>{% if room.game.startswith("HUB_") %}{{ room.game|replace("HUB_", "")|replace("_", " ")|title }}{% else %}{{ room.game }}{% endif %} · Hosted by <a href="{{ url_for('auth_rooms.profile', username=room.host_username) }}">{{ room.host_username }}</a></p>
+    <p>Room code: <strong>{{ room.room_code }}</strong></p>
+    <p>{{ room.description or "No room description." }}</p>
+    <p>Status: {{ room.status }} · {{ participants|length }} / {{ room.max_players }} players</p>
+    {% if room.game in ("HUB_NEON_SPRINT", "HUB_CIPHER_CLASH", "HUB_TACTIC_GRID", "HUB_REACTION_RELAY") %}
+    <p>This is a Gaming Hub Original and can be played in the browser from this room.</p>
+    {% else %}
+    <p>This room helps players coordinate an external game. Open that game separately on your device; it does not run inside Gaming Hub.</p>
+    {% endif %}
+    {% if room.game_password %}<p>This room requires its password to join.</p>{% else %}<p>This room has no join password.</p>{% endif %}
+    <h2>Players</h2>
+    <ul>{% for participant in participants %}<li>{{ participant.username }}{% if participant.is_host %} (host){% endif %}</li>{% endfor %}</ul>
+
+    {% if user and user.is_authenticated %}
+        {% if is_host %}
+            <p>You are hosting this room.</p>
+            {% if room.game in ("HUB_NEON_SPRINT", "HUB_CIPHER_CLASH", "HUB_TACTIC_GRID", "HUB_REACTION_RELAY") %}
+            <a class="button" href="{{ url_for('live_games.play_room', room_code=room.room_code) }}">Open game lobby</a>
+            {% endif %}
+        {% elif is_joined %}
+            {% if room.game in ("HUB_NEON_SPRINT", "HUB_CIPHER_CLASH", "HUB_TACTIC_GRID", "HUB_REACTION_RELAY") %}
+            <p><a class="button" href="{{ url_for('live_games.play_room', room_code=room.room_code) }}">Open game lobby</a></p>
+            {% endif %}
+            <form method="post" action="{{ url_for('auth_rooms.leave_room', room_code=room.room_code) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit">Leave room</button>
+            </form>
+        {% elif room.is_active and not is_full %}
+            <form method="post" action="{{ url_for('auth_rooms.join_room', room_code=room.room_code) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                {% if room.game_password %}<p><label>Room password <input type="password" name="game_password" required maxlength="10"></label></p>{% else %}<input type="hidden" name="game_password" value="">{% endif %}
+                <button type="submit">Join room</button>
+            </form>
+        {% elif is_full %}
+            <p>This room is full.</p>
+        {% endif %}
+        {% if is_host and room.game in ("HUB_NEON_SPRINT", "HUB_CIPHER_CLASH", "HUB_TACTIC_GRID", "HUB_REACTION_RELAY") %}
+        <form method="post" action="{{ url_for('live_games.start_room_game', room_code=room.room_code) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit">Start the game</button>
+        </form>
+        {% endif %}
+        <form method="post" action="{{ url_for('auth_rooms.logout') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit">Log out</button>
+        </form>
+    {% else %}
+        <p><a href="{{ url_for('auth_rooms.login') }}">Log in</a> to join this room.</p>
+    {% endif %}
+    <p><a href="{{ url_for('auth_rooms.room_list') }}">Back to rooms</a></p>
+</section>
+{% endblock %}

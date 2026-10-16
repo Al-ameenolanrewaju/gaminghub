@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Payment status | Gaming Hub{% endblock %}
+{% block content %}
+<h1>Payment status</h1>
+{% for category, message in get_flashed_messages(with_categories=true) %}
+  <p role="status">{{ message }}</p>
+{% endfor %}
+<section class="card">
+  <h2>{{ subscription.tournament_title }}</h2>
+  <p>Status: <strong>{{ subscription.payment_status|title }}</strong></p>
+  <p>Amount: {{ subscription.currency }} {{ subscription.payment_amount }}</p>
+  <p>Method: {{ subscription.payment_method|replace("_", " ")|title }}</p>
+  {% if subscription.transaction_id %}<p>Reference: {{ subscription.transaction_id }}</p>{% endif %}
+  <p>Submitted: {{ subscription.subscription_date }}</p>
+  <p>Payment verification is not implemented in this Flask port. The submission remains pending until confirmed outside the application.</p>
+  <a href="{{ url_for('competitions.tournament_detail', tournament_id=subscription.tournament_id) }}">Tournament details</a>
+</section>
+{% endblock %}

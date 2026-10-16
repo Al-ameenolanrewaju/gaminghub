@@ -1,0 +1,289 @@
+{% extends "base.html" %}
+{% block title %}Administration · Gaming Hub{% endblock %}
+{% block content %}
+<style>
+    .admin-heading { margin-bottom: 1.5rem; }
+    .admin-heading h1 { margin: .4rem 0 .6rem; font-size: clamp(2rem, 4vw, 3rem); }
+    .admin-eyebrow { margin: 0; color: #93c5fd; font-size: .73rem; font-weight: 800; letter-spacing: .16em; }
+    .admin-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: .8rem; margin: 1.5rem 0; }
+    .admin-stat { border: 1px solid var(--line); border-radius: 13px; padding: 1rem 1.15rem; background: rgba(17, 25, 43, .75); }
+    .admin-stat strong { display: block; color: #bfdbfe; font-size: 1.65rem; }
+    .admin-stat span { color: var(--muted); font-size: .85rem; }
+    .admin-jumps { position: sticky; z-index: 4; top: 4.2rem; display: flex; gap: .45rem; overflow-x: auto; margin: 1.25rem 0 2.25rem; padding: .55rem; border: 1px solid var(--line); border-radius: 12px; background: rgba(8, 13, 25, .92); backdrop-filter: blur(16px); }
+    .admin-jumps a { flex: 0 0 auto; border-radius: 8px; padding: .55rem .75rem; color: #c6cce0; font-size: .85rem; text-decoration: none; }
+    .admin-jumps a:hover { background: rgba(148, 163, 184, .12); color: white; }
+    .admin-section { scroll-margin-top: 8rem; margin: 2.5rem 0; }
+    .admin-section > h2 { margin: 0 0 1rem; }
+    .admin-item { display: flex; flex-direction: column; gap: .8rem; }
+    .admin-item h3, .admin-item p { margin: 0; }
+    .admin-item form { display: grid; gap: .7rem; margin-top: .25rem; }
+    .admin-item label { display: grid; gap: .35rem; color: #c5cede; font-size: .88rem; }
+    .admin-item .button { justify-self: start; }
+    .admin-item .admin-actions { display: flex; flex-wrap: wrap; gap: .6rem; }
+    .admin-empty { border: 1px dashed #34415a; border-radius: 12px; padding: 1.1rem; color: var(--muted); }
+    .admin-toolbar { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: .8rem; margin-bottom: 1rem; }
+    .admin-search { display: flex; flex-wrap: wrap; align-items: end; gap: .5rem; }
+    .admin-search label { display: grid; gap: .35rem; color: #c5cede; font-size: .85rem; }
+    .admin-search input { min-width: min(20rem, 75vw); }
+    .admin-table-wrap { overflow-x: auto; }
+    .admin-table { min-width: 720px; }
+    .admin-table form { display: inline-flex; margin: .15rem; }
+    .admin-table .button { min-height: 2.2rem; padding: .45rem .65rem; font-size: .82rem; }
+    .admin-table select { min-height: 2.2rem; padding: .35rem .5rem; font-size: .82rem; }
+    .admin-status { display: inline-block; border-radius: 999px; padding: .2rem .55rem; background: #334155; font-size: .78rem; }
+    .admin-status.active { background: #14532d; color: #bbf7d0; }
+    .admin-status.inactive { background: #713f12; color: #fde68a; }
+    .admin-actions-cell { min-width: 245px; }
+    @media (max-width: 760px) { .admin-jumps { top: 7.5rem; } }
+</style>
+<div class="admin-dashboard">
+<header class="admin-heading">
+    <p class="admin-eyebrow">STAFF CONTROL CENTER</p>
+    <h1>Administration</h1>
+    <p class="muted">Review player activity, manage competitions, and update game availability.</p>
+</header>
+<div class="admin-summary" aria-label="Dashboard totals">
+    <div class="admin-stat"><strong>{{ totals.users }}</strong><span>User accounts</span></div>
+    <div class="admin-stat"><strong>{{ totals.active_rooms }}</strong><span>Active rooms</span></div>
+    <div class="admin-stat"><strong>{{ totals.pending_submissions }}</strong><span>Pending submissions</span></div>
+    <div class="admin-stat"><strong>{{ totals.pending_payments }}</strong><span>Pending payments</span></div>
+</div>
+<nav class="admin-jumps" aria-label="Administration sections">
+    <a href="#users">Users</a>
+    <a href="#rooms">Rooms</a>
+    <a href="#submissions">Submissions</a>
+    <a href="#payments">Payments</a>
+    <a href="#tournaments">Tournaments</a>
+    <a href="#matches">Matches</a>
+    <a href="#games">Games</a>
+</nav>
+{% with notices = get_flashed_messages(with_categories=true) %}
+{% for category, notice in notices %}<p class="card">{{ notice }}</p>{% endfor %}
+{% endwith %}
+
+<section class="admin-section" id="users">
+    <h2>User management</h2>
+    <div class="admin-toolbar">
+        <p class="muted">Search accounts, control access, and manage staff roles.</p>
+        <form class="admin-search" method="get" action="{{ url_for('admin.dashboard') }}">
+            <label for="admin-user-search">Username or email
+                <input id="admin-user-search" name="q" value="{{ search }}" maxlength="100" placeholder="Search users">
+            </label>
+            <button class="button" type="submit">Search</button>
+            {% if search %}<a href="{{ url_for('admin.dashboard') }}">Clear</a>{% endif %}
+        </form>
+    </div>
+    {% if users %}
+    <div class="card admin-table-wrap">
+        <table class="admin-table">
+            <thead><tr><th>User</th><th>Email</th><th>Joined</th><th>Account</th><th>Role</th><th>Actions</th></tr></thead>
+            <tbody>
+            {% for account in users %}
+            <tr>
+                <td>{{ account.username }}{% if account.id == session.get("user_id") %} (you){% endif %}</td>
+                <td>{{ account.email }}</td>
+                <td>{{ account.date_joined }}</td>
+                <td><span class="admin-status {{ 'active' if account.is_active else 'inactive' }}">{{ 'Active' if account.is_active else 'Disabled' }}</span></td>
+                <td>{% if account.is_superuser %}Superuser{% elif account.is_staff %}Staff{% else %}Player{% endif %}</td>
+                <td class="admin-actions-cell">
+                    {% if account.id != session.get("user_id") and not account.is_superuser %}
+                    <form method="post" action="{{ url_for('admin.update_user', user_id=account.id) }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="q" value="{{ search }}">
+                        <input type="hidden" name="action" value="{{ 'deactivate' if account.is_active else 'activate' }}">
+                        <button class="button" type="submit">{{ 'Disable' if account.is_active else 'Activate' }}</button>
+                    </form>
+                    {% endif %}
+                    {% if user.is_superuser and account.id != session.get("user_id") and not account.is_superuser %}
+                    <form method="post" action="{{ url_for('admin.update_user', user_id=account.id) }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="q" value="{{ search }}">
+                        <input type="hidden" name="action" value="{{ 'revoke_staff' if account.is_staff else 'grant_staff' }}">
+                        <button class="button button-secondary" type="submit">{{ 'Remove staff' if account.is_staff else 'Make staff' }}</button>
+                    </form>
+                    {% endif %}
+                    {% if account.id == session.get("user_id") or account.is_superuser %}<span class="muted">Protected</span>{% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="admin-empty">{% if search %}No users matched “{{ search }}”.{% else %}No user accounts found.{% endif %}</p>
+    {% endif %}
+</section>
+
+<section class="admin-section" id="rooms">
+    <h2>Room management</h2>
+    <p class="muted">Review recent rooms and close or reopen them without deleting their history.</p>
+    {% if rooms %}
+    <div class="grid">
+        {% for room in rooms %}
+        <article class="card admin-item">
+            <h3><a href="{{ url_for('auth_rooms.room_detail', room_code=room.room_code) }}">{{ room.title }}</a></h3>
+            <p>{{ room.game }} · Hosted by {{ room.host_username }}</p>
+            <p class="muted">Code {{ room.room_code }} · {{ room.current_players }}/{{ room.max_players }} players · {{ room.created_at }}</p>
+            <p><span class="admin-status {{ 'active' if room.is_active else 'inactive' }}">{{ 'Open' if room.is_active else 'Closed' }}</span></p>
+            <form method="post" action="{{ url_for('admin.update_room_status', room_id=room.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="is_active" value="{{ 0 if room.is_active else 1 }}">
+                <button class="button" type="submit">{{ 'Close room' if room.is_active else 'Reopen room' }}</button>
+            </form>
+        </article>
+        {% endfor %}
+    </div>
+    {% else %}<p class="admin-empty">No rooms found.</p>{% endif %}
+</section>
+
+<section class="admin-section" id="submissions">
+    <h2>Player submissions</h2>
+    {% if submissions %}
+    <div class="grid">
+        {% for submission in submissions %}
+        <article class="card admin-item">
+            <h3>{{ submission.username }} · {{ submission.game_type }}</h3>
+            <p>Score {{ submission.total_score }} · {{ submission.status }} · {{ submission.created_at }}</p>
+            <form method="post" action="{{ url_for('admin.update_submission', submission_id=submission.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <label>Status
+                    <select name="status">
+                        {% for option in ['pending', 'verified', 'rejected'] %}
+                        <option value="{{ option }}" {% if option == submission.status %}selected{% endif %}>{{ option }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                <label>Rejection reason <input name="rejection_reason" maxlength="500"></label>
+                <button class="button" type="submit">Save status</button>
+            </form>
+        </article>
+        {% endfor %}
+    </div>
+    {% else %}<p class="admin-empty">No submissions found.</p>{% endif %}
+</section>
+
+<section class="admin-section" id="payments">
+    <h2>Tournament payments</h2>
+    {% if payments %}
+    <div class="grid">
+        {% for payment in payments %}
+        <article class="card admin-item">
+            <h3>{{ payment.tournament_title }}</h3>
+            <p>{{ payment.username }} · {{ payment.payment_amount }} · {{ payment.payment_method }}</p>
+            <p class="muted">Current status: {{ payment.payment_status }}</p>
+            {% if payment.payment_proof %}<p><a href="{{ url_for('main.media_file', filename=payment.payment_proof) }}">View payment proof</a></p>{% endif %}
+            <form method="post" action="{{ url_for('admin.update_payment', subscription_id=payment.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <label>Status
+                    <select name="status">
+                        {% for option in ['pending', 'processing', 'completed', 'failed', 'refunded'] %}
+                        <option value="{{ option }}" {% if option == payment.payment_status %}selected{% endif %}>{{ option }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                <label>Admin notes <input name="admin_notes" maxlength="500"></label>
+                <button class="button" type="submit">Save payment status</button>
+            </form>
+        </article>
+        {% endfor %}
+    </div>
+    {% else %}<p class="admin-empty">No tournament payments found.</p>{% endif %}
+</section>
+
+<section class="admin-section" id="tournaments">
+    <h2>Tournaments</h2>
+    {% if tournaments %}
+    <div class="grid">
+        {% for tournament in tournaments %}
+        <article class="card admin-item">
+            <h3>{{ tournament.title }}</h3>
+            <p>{{ tournament.game_name or 'No game selected' }} · {{ tournament.current_participants }}/{{ tournament.max_participants }} players</p>
+            <form method="post" action="{{ url_for('admin.update_tournament', tournament_id=tournament.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <label>Status
+                    <select name="status">
+                        {% for option in ['upcoming', 'ongoing', 'completed', 'cancelled'] %}
+                        <option value="{{ option }}" {% if option == tournament.status %}selected{% endif %}>{{ option }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                <button class="button" type="submit">Save tournament</button>
+            </form>
+            <form method="post" action="{{ url_for('admin.update_tournament_result', tournament_id=tournament.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                {% for field, label, selected_id in [
+                    ('first_place_id', 'First place', tournament.first_place_id),
+                    ('second_place_id', 'Second place', tournament.second_place_id),
+                    ('third_place_id', 'Third place', tournament.third_place_id)
+                ] %}
+                <label>{{ label }}
+                    <select name="{{ field }}">
+                        <option value="">Not set</option>
+                        {% for player in tournament_players[tournament.id] %}
+                        <option value="{{ player.id }}" {% if player.id == selected_id %}selected{% endif %}>{{ player.username }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                {% endfor %}
+                <button class="button" type="submit">Publish final results</button>
+            </form>
+        </article>
+        {% endfor %}
+    </div>
+    {% else %}<p class="admin-empty">No tournaments found.</p>{% endif %}
+</section>
+
+<section class="admin-section" id="matches">
+    <h2>Tournament matches</h2>
+    {% if matches %}
+    <div class="grid">
+        {% for match in matches %}
+        <article class="card admin-item">
+            <h3>{{ match.tournament_title }} · Round {{ match.round_number }}, Match {{ match.match_number }}</h3>
+            <p>{{ match.player1_username or 'TBD' }} vs {{ match.player2_username or 'TBD' }}</p>
+            <form method="post" action="{{ url_for('admin.update_match', match_id=match.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <label>Player 1 score <input type="number" name="score_player1" min="0" max="10000" value="{{ match.score_player1 }}" required></label>
+                <label>Player 2 score <input type="number" name="score_player2" min="0" max="10000" value="{{ match.score_player2 }}" required></label>
+                <label>Status
+                    <select name="status">
+                        {% for option in ['scheduled', 'ongoing', 'completed', 'cancelled'] %}
+                        <option value="{{ option }}" {% if option == match.status %}selected{% endif %}>{{ option }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                <label>Winner
+                    <select name="winner_id">
+                        <option value="">Not set</option>
+                        {% if match.player1_id %}<option value="{{ match.player1_id }}" {% if match.winner_id == match.player1_id %}selected{% endif %}>{{ match.player1_username }}</option>{% endif %}
+                        {% if match.player2_id %}<option value="{{ match.player2_id }}" {% if match.winner_id == match.player2_id %}selected{% endif %}>{{ match.player2_username }}</option>{% endif %}
+                    </select>
+                </label>
+                <button class="button" type="submit">Save match</button>
+            </form>
+        </article>
+        {% endfor %}
+    </div>
+    {% else %}<p class="admin-empty">No tournament matches found.</p>{% endif %}
+</section>
+
+<section class="admin-section" id="games">
+    <h2>Tournament games</h2>
+    {% if games %}
+    <div class="grid">
+        {% for game in games %}
+        <article class="card admin-item">
+            <h3>{{ game.name }}</h3>
+            <p>Availability: {{ 'active' if game.is_active else 'inactive' }}</p>
+            <form method="post" action="{{ url_for('admin.update_game_active', game_id=game.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="is_active" value="{{ 0 if game.is_active else 1 }}">
+                <button class="button" type="submit">Set {{ 'inactive' if game.is_active else 'active' }}</button>
+            </form>
+        </article>
+        {% endfor %}
+    </div>
+    {% else %}<p class="admin-empty">No tournament games found.</p>{% endif %}
+</section>
+</div>
+{% endblock %}

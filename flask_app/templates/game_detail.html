@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}{{ game.name }} · Gaming Hub{% endblock %}
+{% block content %}
+<p><a href="{{ url_for('main.game_list') }}">← All games</a></p>
+<article class="card">
+    {% if game.cover_image %}<img class="cover" src="{{ url_for('main.media_file', filename=game.cover_image) }}" alt="">{% endif %}
+    <h1>{{ game.name }}</h1>
+    <p class="muted">{{ game.genre }} · {{ game.platform }}{% if game.release_year %} · {{ game.release_year }}{% endif %}</p>
+    <p>{{ game.description }}</p>
+    {% if game.developer %}<p>Developer: {{ game.developer }}</p>{% endif %}
+    {% if game.official_website %}<p><a href="{{ game.official_website }}" rel="noopener noreferrer">Official website</a></p>{% endif %}
+</article>
+
+<section>
+    <h2>Active rooms</h2>
+    {% if rooms %}
+    <div class="grid">{% for room in rooms %}
+        <article class="card"><h3><a href="{{ url_for('auth_rooms.room_detail', room_code=room.room_code) }}">{{ room.title }}</a></h3><p>{{ room.game }} · Hosted by {{ room.host_username }}</p><p class="muted">Code {{ room.room_code }}</p></article>
+    {% endfor %}</div>
+    {% else %}<p class="muted">No active rooms for this game.</p>{% endif %}
+</section>
+
+<section>
+    <h2>Community reviews</h2>
+    {% if reviews %}<div class="grid">{% for review in reviews %}
+        <article class="card"><h3>{{ review.title }} · {{ review.rating }}/5</h3><p>{{ review.content }}</p><p class="muted">By {{ review.username }}</p></article>
+    {% endfor %}</div>{% else %}<p class="muted">No reviews yet.</p>{% endif %}
+</section>
+
+<section>
+    <h2>Highlights</h2>
+    {% if highlights %}<div class="grid">{% for highlight in highlights %}
+        <article class="card"><h3><a href="{{ highlight.video_url }}" rel="noopener noreferrer">{{ highlight.title }}</a></h3><p>{{ highlight.description }}</p></article>
+    {% endfor %}</div>{% else %}<p class="muted">No highlights yet.</p>{% endif %}
+</section>
+{% endblock %}

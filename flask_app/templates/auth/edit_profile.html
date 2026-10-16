@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Edit profile · Gaming Hub{% endblock %}
+{% block content %}
+<section class="card">
+    <h1>Edit profile</h1>
+    {% for message in get_flashed_messages() %}<p role="status">{{ message }}</p>{% endfor %}
+    {% for error in errors %}<p role="alert">{{ error }}</p>{% endfor %}
+    <form method="post" action="{{ url_for('auth_rooms.edit_profile') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <p><label>Email <input type="email" name="email" required maxlength="254" value="{{ values.email }}"></label></p>
+        <p><label>Bio <textarea name="bio" maxlength="500">{{ values.bio }}</textarea></label></p>
+        <p><label>Gamer tag <input name="gamer_tag" maxlength="100" value="{{ values.gamer_tag }}"></label></p>
+        <p><label>Main game <input name="main_game" maxlength="100" value="{{ values.main_game }}"></label></p>
+        <p><label>Country <input name="country" maxlength="100" value="{{ values.country }}"></label></p>
+        <p><label>Platform <input name="platform" maxlength="100" value="{{ values.platform }}"></label></p>
+        <p><label>Play style <input name="play_style" maxlength="100" value="{{ values.play_style }}"></label></p>
+        <p><label>Preferred mode
+            <select name="preferred_mode">
+                {% for mode in ("CASUAL", "COMPETITIVE", "TOURNAMENT", "PRACTICE", "CUSTOM") %}
+                <option value="{{ mode }}" {% if values.preferred_mode == mode %}selected{% endif %}>{{ mode|title }}</option>
+                {% endfor %}
+            </select>
+        </label></p>
+        <p><label>Profile visibility
+            <select name="profile_visibility">
+                {% for visibility in ("public", "friends", "private") %}
+                <option value="{{ visibility }}" {% if values.profile_visibility == visibility %}selected{% endif %}>{{ visibility|title }}</option>
+                {% endfor %}
+            </select>
+        </label></p>
+        <button class="button" type="submit">Save profile</button>
+    </form>
+    {% if user and user.is_authenticated %}
+    <form method="post" action="{{ url_for('auth_rooms.logout') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit">Log out</button>
+    </form>
+    {% endif %}
+</section>
+{% endblock %}

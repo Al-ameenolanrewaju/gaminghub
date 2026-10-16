@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}About Clash Royale | Gaming Hub{% endblock %}
+{% block content %}
+<h1>About the Clash Royale leaderboard</h1>
+<section class="card">
+  <p>Track public Clash Royale player statistics and compare trophies and win rates with other connected players.</p>
+  <p>{{ total_players }} player accounts are currently tracked.</p>
+  {% if use_mock_data %}
+  <p>Demo mode is active. Connected accounts receive generated sample statistics because the live API is not configured or enabled.</p>
+  {% else %}
+  <p>Live API mode is available. Only public player data is requested; credentials are kept server-side.</p>
+  {% endif %}
+  <p>The leaderboard is an independent community feature and is not affiliated with Supercell.</p>
+  <a class="button" href="{{ url_for('competitions.clash_royale_leaderboard') }}">View leaderboard</a>
+</section>
+{% endblock %}

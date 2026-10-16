@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Register for {{ tournament.title }} | Gaming Hub{% endblock %}
+{% block content %}
+<p><a href="{{ url_for('competitions.tournament_detail', tournament_id=tournament.id) }}">← Back to tournament</a></p>
+<h1>Registration payment</h1>
+{% for category, message in get_flashed_messages(with_categories=true) %}
+  <p role="status">{{ message }}</p>
+{% endfor %}
+<section class="card">
+  <h2>{{ tournament.title }}</h2>
+  <p>Amount due: <strong>{{ tournament.currency }} {{ tournament.entry_fee }}</strong></p>
+  <p>Payment submissions are recorded as pending. This Flask port does not process or verify payments; confirmation must be done separately by an administrator.</p>
+  <form method="post" enctype="multipart/form-data" action="{{ url_for('competitions.submit_payment', tournament_id=tournament.id) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label for="payment_method">Payment method</label>
+    <select id="payment_method" name="payment_method" required>
+      <option value="mobile_money">Mobile money</option>
+      <option value="bank_transfer">Bank transfer</option>
+      <option value="crypto">Cryptocurrency</option>
+      <option value="cash">Cash</option>
+      <option value="other">Other</option>
+    </select>
+    <p><label for="transaction_id">Transaction/reference ID (optional)</label><br>
+      <input id="transaction_id" name="transaction_id" maxlength="100"></p>
+    <p><label for="payer_name">Payer name</label><br>
+      <input id="payer_name" name="payer_name" maxlength="255"></p>
+    <p><label for="payer_email">Payer email</label><br>
+      <input id="payer_email" name="payer_email" type="email" maxlength="254"></p>
+    <p><label for="payment_proof">Payment proof (PDF, PNG, JPEG, GIF, or WebP; max 10 MB)</label><br>
+      <input id="payment_proof" name="payment_proof" type="file" accept=".pdf,.png,.jpg,.jpeg,.gif,.webp,application/pdf,image/png,image/jpeg,image/gif,image/webp"></p>
+    <button class="button" type="submit">Submit payment details</button>
+  </form>
+</section>
+{% endblock %}

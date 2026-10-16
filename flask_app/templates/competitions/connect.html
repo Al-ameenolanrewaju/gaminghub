@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Connect Clash Royale | Gaming Hub{% endblock %}
+{% block content %}
+<h1>Connect Clash Royale account</h1>
+{% for category, message in get_flashed_messages(with_categories=true) %}
+  <p role="status">{{ message }}</p>
+{% endfor %}
+<section class="card">
+  {% if use_mock_data %}
+  <p>Demo mode is active: plausible mock stats will be generated for the tag. No API key is available or live data is disabled.</p>
+  {% else %}
+  <p>Your public player statistics will be fetched from the official Clash Royale API. API credentials are never shown.</p>
+  {% endif %}
+  <form method="post" action="{{ url_for('competitions.connect_account') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label for="player_tag">Player tag</label>
+    <input id="player_tag" name="player_tag" maxlength="20" required placeholder="#ABC123">
+    <button class="button" type="submit">Connect account</button>
+  </form>
+</section>
+<p><a href="{{ url_for('competitions.clash_royale_leaderboard') }}">Back to leaderboard</a></p>
+{% endblock %}

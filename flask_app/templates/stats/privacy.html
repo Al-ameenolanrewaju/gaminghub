@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Privacy · Gaming Hub{% endblock %}
+{% block content %}
+<section class="hero"><h1>Privacy notice</h1><p>What this stats feature stores and displays.</p></section>
+<article class="card">
+    <h2>Account and submission information</h2>
+    <p>To associate stats with an account, the stats pages read the account ID and username from the existing Gaming Hub account database. Submitted game stats, notes, score, verification status, and timestamps are stored in the existing stats-submission table.</p>
+    <h2>Public display</h2>
+    <p>Only submissions marked both verified and verified by an administrator are listed on public leaderboards. Your own submissions and review status are visible on the My Submissions page after sign-in.</p>
+    <h2>Contact form</h2>
+    <p>The Flask contact form does not send or save messages. It validates the entered details and directs you to email support directly.</p>
+    <h2>Questions</h2>
+    <p>For privacy questions, contact <a href="mailto:support@gaminghub.com">support@gaminghub.com</a>.</p>
+</article>
+{% endblock %}

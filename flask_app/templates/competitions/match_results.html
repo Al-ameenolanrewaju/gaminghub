@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Match results | Gaming Hub{% endblock %}
+{% block content %}
+<p><a href="{{ url_for('competitions.tournament_detail', tournament_id=tournament.id) }}">← {{ tournament.title }}</a></p>
+<h1>Match results — {{ tournament.title }}</h1>
+<section class="card">
+  {% if matches %}
+  <ul>{% for match in matches %}
+    <li>Round {{ match.round_number }}, match {{ match.match_number }} · {{ match.status|title }}:
+      {{ match.player1_username or "TBD" }} {{ match.score_player1 }}–{{ match.score_player2 }}
+      {{ match.player2_username or "TBD" }}{% if match.winner_username %} · Winner: {{ match.winner_username }}{% endif %}
+      {% if match.scheduled_time %} · {{ match.scheduled_time }}{% endif %}
+    </li>
+  {% endfor %}</ul>
+  {% else %}<p>No matches have been published.</p>{% endif %}
+</section>
+{% endblock %}

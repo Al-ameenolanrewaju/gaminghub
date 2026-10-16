@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Gaming Hub{% endblock %}</title>
+    <style>
+        :root {
+            color-scheme: dark;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            font-synthesis: none;
+            text-rendering: optimizeLegibility;
+            --surface: #1e293b;
+            --surface-raised: #26354c;
+            --line: #334155;
+            --muted: #94a3b8;
+            --accent: #60a5fa;
+            --accent-bright: #93c5fd;
+        }
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            min-height: 100vh;
+            margin: 0;
+            background: #0f172a;
+        }
+        a { color: #60a5fa; text-underline-offset: 3px; }
+        a:hover { color: #93c5fd; }
+        .site-nav {
+            position: sticky;
+            z-index: 5;
+            top: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem 2rem;
+            padding: .8rem max(1.25rem, calc((100% - 1180px) / 2));
+            background: #1e293b;
+            border-bottom: 3px solid #3b82f6;
+        }
+        .site-nav a { text-decoration: none; }
+        .brand { flex: 0 0 auto; color: #60a5fa; font-size: 1.35rem; font-weight: 800; letter-spacing: -.025em; }
+        .brand:hover { color: #93c5fd; }
+        .site-menu { min-width: 0; }
+        .site-menu > summary { display: none; }
+        .nav-links { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: .25rem; }
+        .nav-links > a, .logout-form button {
+            display: inline-flex;
+            align-items: center;
+            min-height: 2.25rem;
+            padding: .5rem .7rem;
+            border: 0;
+            border-radius: 8px;
+            background: transparent;
+            color: #cbd5e1;
+            font: inherit;
+            font-size: .84rem;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .nav-links > a:hover, .logout-form button:hover { background: #334155; color: #60a5fa; }
+        main { width: min(1180px, calc(100% - 2.5rem)); min-height: calc(100vh - 150px); margin: 2.5rem auto 4rem; }
+        main > h1:first-child { margin: 0 0 .75rem; color: #f8fafc; font-size: clamp(2rem, 4vw, 2.8rem); }
+        main > h1:first-child + p { margin: 0 0 1.5rem; color: var(--muted); }
+        main > section + section, main > .grid + section { margin-top: 1.5rem; }
+        main > .grid { margin-top: 1.25rem; }
+        .hero, .card {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: clamp(1.25rem, 3vw, 2rem);
+            box-shadow: 0 8px 22px rgba(0, 0, 0, .15);
+        }
+        .hero { margin-bottom: 1.5rem; }
+        .hero:not(.home-hero) h1 { margin-top: 0; font-size: clamp(1.8rem, 4vw, 2.5rem); }
+        .card h1:first-child, .card h2:first-child, .card h3:first-child { margin-top: 0; }
+        .card h2 { margin: 1.5rem 0 .85rem; }
+        .card h3 { margin: 1.15rem 0 .65rem; }
+        .card > :last-child { margin-bottom: 0; }
+        .grid > .card { min-width: 0; }
+        .grid > .card h2 { margin-top: 0; font-size: 1.35rem; }
+        .grid > .card p:last-of-type { margin-bottom: 0; }
+        section > .grid, section > .card, section > form.card { margin-top: 1rem; }
+        .home-hero {
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 3rem;
+            padding: clamp(2.5rem, 7vw, 4rem) 2rem;
+            text-align: center;
+            background: linear-gradient(135deg, #1e3a8a, #0f172a);
+        }
+        .home-hero h1 { position: relative; z-index: 1; max-width: 900px; margin: .5rem auto 1rem; color: #60a5fa; font-size: clamp(2.2rem, 5vw, 3rem); }
+        .home-intro { max-width: 800px; margin: 0 auto 1.5rem; color: #cbd5e1; font-size: clamp(1rem, 2vw, 1.2rem); }
+        .home-actions { position: relative; z-index: 1; display: flex; flex-wrap: wrap; justify-content: center; gap: .75rem; }
+        .button-secondary { border-color: rgba(255, 255, 255, .15); background: #10b981; box-shadow: none; }
+        .button-secondary:hover { background: #059669; }
+        .home-section { max-width: 1200px; margin: 3rem auto; }
+        .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
+        .section-heading h2 { margin: 0 0 .5rem; border-left: 4px solid #3b82f6; padding-left: 1rem; color: #60a5fa; font-size: 1.8rem; }
+        .section-link { flex: 0 0 auto; margin-bottom: .35rem; font-size: .9rem; font-weight: 650; text-decoration: none; }
+        .home-game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: 1.5rem; }
+        .home-game-card { display: flex; flex-direction: column; min-height: 100%; }
+        .home-game-genre { align-self: flex-start; margin: .75rem 0; border-radius: 999px; padding: .3rem .8rem; background: #475569; color: white; font-size: .9rem; }
+        .home-game-title { margin: 0 0 .5rem; font-size: 1.3rem; }
+        .home-game-title a { color: #f1f5f9; text-decoration: none; }
+        .home-game-description { flex: 1; margin: 0 0 1rem; color: #94a3b8; font-size: .95rem; }
+        .home-game-meta { display: flex; align-items: center; justify-content: space-between; gap: .75rem; margin-top: auto; }
+        .home-small-button { min-height: 0; padding: .45rem .8rem; font-size: .9rem; }
+        .home-room-list { display: flex; flex-direction: column; gap: 1rem; }
+        .home-room-card { border-left: 4px solid #10b981; }
+        .home-room-heading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: .75rem; }
+        .home-room-heading h3 { margin: 0; color: #f1f5f9; font-size: 1.2rem; }
+        .home-room-heading h3 a { color: inherit; text-decoration: none; }
+        .home-room-game, .home-room-description { margin: .35rem 0 0; color: #cbd5e1; }
+        .home-room-game { color: #60a5fa; font-size: .9rem; }
+        .home-room-meta { display: grid; justify-items: end; gap: .45rem; text-align: right; }
+        .home-room-players, .home-room-code { border-radius: 5px; padding: .3rem .8rem; color: white; font-size: .9rem; white-space: nowrap; }
+        .home-room-players { background: #10b981; }
+        .home-room-code { border: 1px solid #334155; background: #1e293b; color: #60a5fa; font-family: ui-monospace, monospace; font-weight: 700; letter-spacing: 1px; }
+        .home-room-description { margin: 0 0 1rem; }
+        .home-empty { text-align: center; }
+        .home-empty h3 { margin: 0 0 .7rem; }
+        .home-stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 1rem; }
+        .home-stat { text-align: center; }
+        .home-stat strong { display: block; color: #60a5fa; font-size: 2.5rem; }
+        .home-stat span { display: block; margin-top: .5rem; color: #94a3b8; }
+        form:not(.logout-form) { min-width: 0; }
+        form > p { margin: 0 0 .9rem; }
+        form label { display: grid; gap: .4rem; color: #e2e8f0; font-weight: 600; }
+        form label input, form label select, form label textarea { width: 100%; }
+        form input[type="checkbox"], form input[type="radio"] { width: auto; }
+        input, select, textarea {
+            width: 100%;
+            min-height: 2.75rem;
+            border: 1px solid #475569;
+            border-radius: 8px;
+            background: #0f172a;
+            color: #f8fafc;
+            font: inherit;
+            padding: .65rem .8rem;
+        }
+        textarea { min-height: 7rem; resize: vertical; }
+        input[type="file"] { padding: .45rem; }
+        input[type="checkbox"], input[type="radio"] { min-height: auto; accent-color: #3b82f6; }
+        input::placeholder, textarea::placeholder { color: #94a3b8; }
+        input:focus, select:focus, textarea:focus, button:focus-visible, a:focus-visible, summary:focus-visible {
+            outline: 2px solid #60a5fa;
+            outline-offset: 2px;
+        }
+        form button:not(.button), main > button:not(.button) {
+            min-height: 2.65rem;
+            border: 1px solid #3b82f6;
+            border-radius: 8px;
+            padding: .6rem .95rem;
+            background: #2563eb;
+            color: #fff;
+            font: inherit;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        form button:not(.button):hover, main > button:not(.button):hover { background: #1d4ed8; }
+        form .grid { gap: 1rem; }
+        [role="alert"] { border: 1px solid rgba(248, 113, 113, .4); border-radius: 9px; padding: .75rem .9rem; background: #451f31; color: #fecaca; }
+        [role="status"] { border-radius: 9px; padding: .65rem .85rem; background: #1e3a8a; }
+        ul, ol { padding-left: 1.4rem; }
+        li { padding-block: .15rem; }
+        dl { display: grid; grid-template-columns: minmax(8rem, .4fr) 1fr; gap: .6rem 1rem; }
+        dt { color: #93c5fd; font-weight: 700; }
+        dd { margin: 0; }
+        code, pre { border-radius: 6px; background: #0f172a; color: #bfdbfe; }
+        code { padding: .15rem .4rem; }
+        pre { max-width: 100%; overflow-x: auto; padding: 1rem; }
+        table { display: block; width: 100%; overflow-x: auto; border-collapse: collapse; }
+        th, td { min-width: 6rem; padding: .8rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+        th { background: #1e293b; color: #93c5fd; font-size: .85rem; }
+        tbody tr:hover { background: rgba(148, 163, 184, .06); }
+        .card > table { margin-block: .5rem; }
+        .card > form + form { margin-top: 1rem; }
+        .button { cursor: pointer; font: inherit; }
+        a.button { color: white; }
+        .notice + .notice { margin-top: -.5rem; }
+        img { max-width: 100%; height: auto; }
+        .notice { margin-bottom: 1rem; border: 1px solid rgba(96, 165, 250, .3); border-radius: 10px; padding: .85rem 1rem; background: #1e3a8a; }
+        .notice.error, .notice.danger { background: #7f1d1d; border-color: rgba(248, 113, 113, .3); }
+        .notice.warning { background: #78350f; border-color: rgba(251, 191, 36, .3); }
+        .logout-form { margin: 0; }
+        .logout-form button.button { min-height: 2.25rem; background: #3b82f6; }
+        .logout-form button.button:hover { background: #2563eb; }
+        .nav-more, .nav-account { position: relative; align-self: center; }
+        .nav-more > summary, .nav-account > summary { cursor: pointer; list-style: none; border-radius: 8px; padding: .55rem .7rem; color: #cbd5e1; font-size: .84rem; white-space: nowrap; }
+        .nav-more > summary::-webkit-details-marker, .nav-account > summary::-webkit-details-marker { display: none; }
+        .nav-more > summary:hover, .nav-account > summary:hover { background: #334155; color: #60a5fa; }
+        .nav-more-links, .nav-account-links {
+            position: absolute;
+            z-index: 10;
+            top: calc(100% + .35rem);
+            right: 0;
+            display: grid;
+            min-width: 200px;
+            gap: .2rem;
+            padding: .45rem;
+            border: 1px solid #475569;
+            border-radius: 10px;
+            background: #1e293b;
+            box-shadow: 0 12px 28px rgba(0, 0, 0, .3);
+        }
+        .nav-more-links a, .nav-account-links a { border-radius: 6px; padding: .6rem .7rem; color: #e2e8f0; font-size: .86rem; text-decoration: none; }
+        .nav-more-links a:hover, .nav-account-links a:hover { background: #334155; color: #93c5fd; }
+        .nav-account-links .logout-form { padding: .25rem .45rem; }
+        .nav-account-links .logout-form button { width: 100%; justify-content: flex-start; }
+        h1, h2, h3 { color: #bfdbfe; letter-spacing: -.025em; }
+        h1 { line-height: 1.08; }
+        h2 { margin: 2.25rem 0 1rem; font-size: clamp(1.35rem, 2vw, 1.7rem); }
+        p { line-height: 1.65; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: 1rem; }
+        .grid > .card { transition: transform .18s ease, border-color .18s ease, background .18s ease; }
+        .grid > .card:hover { transform: translateY(-3px); border-color: #475569; background: var(--surface-raised); }
+        .muted { color: var(--muted); }
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 2.8rem;
+            border: 1px solid rgba(255, 255, 255, .12);
+            border-radius: 10px;
+            padding: .7rem 1rem;
+            background: #3b82f6;
+            color: white;
+            font-weight: 700;
+            text-decoration: none;
+            box-shadow: 0 4px 10px rgba(37, 99, 235, .2);
+            transition: transform .18s ease, filter .18s ease;
+        }
+        .button:hover { color: #fff; background: #2563eb; transform: translateY(-1px); }
+        .nav-links > a.button { background: #3b82f6; color: white; }
+        .nav-links > a.button:hover { background: #2563eb; color: white; }
+        .auth-card { width: min(100%, 620px); margin-inline: auto; }
+        .auth-card h1 { margin: 0 0 1.25rem; }
+        .auth-card form { display: grid; gap: .35rem; }
+        .auth-card form button { justify-self: start; margin-top: .35rem; }
+        .auth-card > p { margin-top: 1rem; }
+        .page-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; }
+        .page-actions > * { margin: 0; }
+        .status-pill { display: inline-flex; align-items: center; border: 1px solid var(--line); border-radius: 999px; padding: .25rem .65rem; background: #334155; color: #e2e8f0; font-size: .85rem; }
+        .status-pill.success { border-color: #166534; background: #14532d; color: #bbf7d0; }
+        .status-pill.warning { border-color: #92400e; background: #78350f; color: #fde68a; }
+        .status-pill.error { border-color: #991b1b; background: #7f1d1d; color: #fecaca; }
+        blockquote { margin: 1rem 0; border-left: 3px solid #3b82f6; padding: .35rem 1rem; color: #cbd5e1; }
+        footer { border-top: 1px solid var(--line); margin-top: 3rem; padding: 1.5rem; text-align: center; color: var(--muted); }
+        .footer-links { display: flex; flex-wrap: wrap; justify-content: center; gap: .6rem; margin-bottom: 0; font-size: .9rem; }
+        img.cover { width: 100%; max-height: 190px; object-fit: cover; border: 1px solid var(--line); border-radius: 12px; }
+        @media (max-width: 760px) {
+            .site-nav { align-items: center; flex-direction: row; gap: .75rem; padding: .7rem .85rem; }
+            .brand { font-size: 1rem; }
+            .site-menu { position: relative; }
+            .site-menu > summary { display: block; cursor: pointer; list-style: none; border: 1px solid #475569; border-radius: 8px; padding: .55rem .8rem; color: #f8fafc; font-size: .9rem; font-weight: 700; }
+            .site-menu > summary::-webkit-details-marker { display: none; }
+            .site-menu > summary::after { content: "  ☰"; color: #93c5fd; }
+            .site-menu[open] > summary { background: #334155; }
+            .nav-links { position: absolute; z-index: 20; top: calc(100% + .65rem); right: 0; display: none; align-items: stretch; justify-content: flex-start; gap: .2rem; width: min(21rem, calc(100vw - 1.5rem)); max-height: calc(100vh - 5.5rem); overflow-y: auto; margin: 0; padding: .65rem; border: 1px solid #475569; border-radius: 12px; background: #1e293b; box-shadow: 0 18px 36px rgba(0, 0, 0, .38); }
+            .site-menu[open] .nav-links { display: flex; flex-direction: column; }
+            .nav-links > a, .nav-links > .logout-form, .nav-more, .nav-account { width: 100%; align-self: stretch; }
+            .nav-links > a, .nav-more > summary, .nav-account > summary { min-height: 2.65rem; padding: .7rem .75rem; font-size: .9rem; }
+            .nav-links > a.button { justify-content: flex-start; }
+            .nav-more > summary, .nav-account > summary { display: block; }
+            .nav-more-links, .nav-account-links { position: static; min-width: 0; margin: .15rem 0 .4rem; box-shadow: none; }
+            .nav-more-links a, .nav-account-links a { padding: .7rem .75rem; }
+            .nav-account-links .logout-form { padding: .25rem .2rem; }
+            .nav-account-links .logout-form button { min-height: 2.5rem; }
+            main { width: min(100% - 1.25rem, 1180px); margin-top: 1.25rem; }
+            main { margin-bottom: 2rem; }
+            .hero, .card { border-radius: 10px; padding: 1.1rem; }
+            .hero:not(.home-hero) { padding: 1.25rem; }
+            .home-game-grid, .home-stats-grid { grid-template-columns: 1fr; }
+            .grid { grid-template-columns: 1fr; }
+            dl { grid-template-columns: 1fr; gap: .25rem; }
+            dd { margin-bottom: .5rem; }
+            .home-hero { margin-bottom: 2rem; padding: 2rem 1.35rem; }
+            .home-section { margin-top: 2.25rem; }
+            .section-heading { align-items: flex-start; flex-direction: column; }
+            .home-room-heading { align-items: flex-start; flex-direction: column; }
+            .home-room-meta { justify-items: start; text-align: left; }
+        }
+        @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; } }
+    </style>
+</head>
+<body>
+    <nav class="site-nav">
+        <a class="brand" href="{{ url_for('main.home') }}">🎮 ULTIMATE GAMING HUB</a>
+        <details class="site-menu" open>
+        <summary>Menu</summary>
+        <div class="nav-links" id="site-navigation">
+            <a href="{{ url_for('main.home') }}">Home</a>
+            <a href="{{ url_for('main.game_list') }}">Games</a>
+            <a href="{{ url_for('auth_rooms.room_list') }}">Rooms</a>
+            <a href="{{ url_for('auth_rooms.create_room') }}">Create Room</a>
+            <a href="{{ url_for('competitions.tournament_list') }}">Tournaments</a>
+            <details class="nav-more">
+                <summary>More</summary>
+                <div class="nav-more-links">
+                    <a href="{{ url_for('competitions.clash_royale_leaderboard') }}">Clash Royale</a>
+                    <a href="{{ url_for('live_games.originals') }}">Hub Originals</a>
+                    <a href="{{ url_for('live_games.leaderboard') }}">Originals leaderboard</a>
+                    <a href="{{ url_for('stats.select_game') }}">Stats</a>
+                </div>
+            </details>
+            {% if user.is_authenticated %}
+            <details class="nav-account">
+                <summary>👤 {{ user.username }}</summary>
+                <div class="nav-account-links">
+                    <a href="{{ url_for('competitions.user_tournaments') }}">My Tournaments</a>
+                    <a href="{{ url_for('auth_rooms.profile', username=user.username) }}">Profile</a>
+                    {% if user.is_staff or user.is_superuser %}<a href="{{ url_for('admin.dashboard') }}">Admin</a>{% endif %}
+                    <form class="logout-form" method="post" action="{{ url_for('auth_rooms.logout') }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button class="button" type="submit">Logout</button>
+                    </form>
+                </div>
+            </details>
+            {% else %}
+            <a href="{{ url_for('auth_rooms.login') }}">Login</a>
+            <a class="button" href="{{ url_for('auth_rooms.register') }}">Sign Up</a>
+            {% endif %}
+        </div>
+        </details>
+    </nav>
+    <main>
+        {% for category, notice in get_flashed_messages(with_categories=true) %}
+        <div class="notice {{ category }}" role="status">{{ notice }}</div>
+        {% endfor %}
+        {% block content %}{% endblock %}
+    </main>
+    <footer>
+        <p>🎮 ULTIMATE GAMING HUB © 2025 - Connect with gamers worldwide</p>
+        <p class="footer-links">
+            <a href="{{ url_for('stats.about') }}">About</a>
+            <span>·</span>
+            <a href="{{ url_for('stats.contact') }}">Contact</a>
+            <span>·</span>
+            <a href="{{ url_for('stats.terms') }}">Terms</a>
+            <span>·</span>
+            <a href="{{ url_for('stats.privacy') }}">Privacy</a>
+        </p>
+    </footer>
+    <script>
+        (() => {
+            const menu = document.querySelector(".site-menu");
+            const mobile = window.matchMedia("(max-width: 760px)");
+            const syncMenu = () => {
+                if (mobile.matches) {
+                    menu.removeAttribute("open");
+                } else {
+                    menu.setAttribute("open", "");
+                }
+            };
+            syncMenu();
+            mobile.addEventListener("change", syncMenu);
+        })();
+    </script>
+</body>
+</html>
